@@ -1,0 +1,417 @@
+/* ============================================
+   HERO — CINEMATIC VIDEO SECTION
+   ============================================ */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* ---- VIDEO BACKGROUND ---- */
+.videoBg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.videoBg video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  will-change: transform;
+}
+
+/* Dark cinematic overlays — layered for depth */
+.videoOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  /* Bottom-up dark gradient so text pops */
+  background:
+    linear-gradient(
+      to top,
+      rgba(8, 8, 8, 1) 0%,
+      rgba(8, 8, 8, 0.7) 30%,
+      rgba(8, 8, 8, 0.3) 60%,
+      rgba(8, 8, 8, 0.5) 100%
+    );
+}
+
+/* Gold accent vignette on edges */
+.videoVignette {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255, 215, 0, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 0% 50%, rgba(0, 0, 0, 0.5) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 50%, rgba(0, 0, 0, 0.5) 0%, transparent 50%);
+}
+
+/* Animated scan lines for a premium cinematic feel */
+.scanLines {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+  pointer-events: none;
+}
+
+/* ---- MAIN CONTENT ---- */
+.heroContent {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  padding-top: 80px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.heroInner {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  max-width: 820px;
+}
+
+/* ---- BADGE ---- */
+.heroBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 18px;
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  backdrop-filter: blur(10px);
+  width: fit-content;
+  letter-spacing: 0.5px;
+}
+
+.badgeDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.75); }
+}
+
+/* ---- TITLE ---- */
+.heroTitle {
+  font-size: clamp(52px, 8vw, 96px);
+  font-weight: 900;
+  line-height: 1.0;
+  letter-spacing: -3px;
+  color: #fff;
+  text-shadow: 0 4px 40px rgba(0, 0, 0, 0.8);
+}
+
+.heroTitle .block {
+  display: block;
+}
+
+.heroTitle .accentLine {
+  display: block;
+  background: linear-gradient(90deg, #FFD700 0%, #FFA500 60%, #FFD700 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ---- SUBTITLE ---- */
+.heroSubtitle {
+  font-size: clamp(16px, 2vw, 20px);
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.7;
+  max-width: 560px;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+  font-weight: 400;
+}
+
+/* ---- ACTIONS ---- */
+.heroActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 36px;
+  background: var(--accent);
+  color: #000;
+  font-weight: 800;
+  font-size: 16px;
+  border-radius: 9999px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.btnPrimary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.3), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.btnPrimary:hover::before { opacity: 1; }
+.btnPrimary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 48px rgba(255, 215, 0, 0.45);
+}
+
+.btnOutline {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 36px;
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
+  border-radius: 9999px;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.25);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.btnOutline:hover {
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.5);
+  transform: translateY(-3px);
+}
+
+/* ---- TRUST BAR ---- */
+.trustBar {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding-top: 8px;
+  flex-wrap: wrap;
+}
+
+.trustItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: rgba(255,255,255,0.65);
+  font-weight: 500;
+}
+
+.trustItem svg {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.trustDivider {
+  width: 1px;
+  height: 20px;
+  background: rgba(255,255,255,0.2);
+}
+
+/* ---- BOTTOM STATS BAR ---- */
+.statsBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: rgba(8, 8, 8, 0.7);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.statsBarInner {
+  display: flex;
+  align-items: stretch;
+}
+
+.statItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  border-right: 1px solid rgba(255,255,255,0.06);
+  gap: 4px;
+  transition: background 0.3s ease;
+}
+
+.statItem:last-child {
+  border-right: none;
+}
+
+.statItem:hover {
+  background: rgba(255,215,0,0.04);
+}
+
+.statNumber {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--accent);
+  letter-spacing: -1px;
+  line-height: 1;
+}
+
+.statLabel {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  font-weight: 500;
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+
+/* ---- SCROLL INDICATOR ---- */
+.scrollIndicator {
+  position: absolute;
+  bottom: 100px;
+  right: 40px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.scrollMouse {
+  width: 24px;
+  height: 38px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 12px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 6px;
+}
+
+.scrollWheel {
+  width: 3px;
+  height: 8px;
+  background: var(--accent);
+  border-radius: 2px;
+  animation: scrollDown 1.5s ease-in-out infinite;
+}
+
+@keyframes scrollDown {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(12px); opacity: 0; }
+}
+
+.scrollText {
+  font-size: 10px;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+}
+
+/* ---- MUTE BUTTON ---- */
+.muteBtn {
+  position: absolute;
+  bottom: 112px;
+  left: 40px;
+  z-index: 10;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.muteBtn:hover {
+  background: rgba(255,215,0,0.2);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 768px) {
+  .heroTitle {
+    font-size: clamp(40px, 10vw, 64px);
+    letter-spacing: -2px;
+  }
+
+  .heroActions {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .btnPrimary, .btnOutline {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .statsBar {
+    display: none;
+  }
+
+  .trustBar {
+    gap: 16px;
+  }
+
+  .trustDivider {
+    display: none;
+  }
+
+  .scrollIndicator,
+  .muteBtn {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroInner {
+    gap: 24px;
+  }
+}

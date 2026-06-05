@@ -1,0 +1,48 @@
+.equipmentPage {
+  background-color: var(--bg-primary);
+}
+
+.specsHeader {
+  text-align: center;
+  margin-bottom: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.specsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 30px;
+}
+
+.specCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 24px;
+}
+
+.specCard h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+
+.specCard ul {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.specCard li {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.specCard strong {
+  color: var(--text-primary);
+}
