@@ -30,10 +30,12 @@ export default function MyOrders() {
       <span className={styles.location}><MapPin size={12} /> {val}</span>
     )},
     { key: 'equipment', label: 'Trailer Profile' },
-    { key: 'rate', label: 'Gross Rate', render: (val) => `$${val.toLocaleString()}` },
-    { key: 'dispatchFee', label: 'Company Fee', render: (val) => `-$${val.toLocaleString()}` },
-    { key: 'driverPayout', label: 'My Net Payout', render: (val) => (
-      <span className={styles.payout} style={{ color: 'var(--accent-gold)' }}>${val.toLocaleString()}</span>
+    { key: 'rate', label: 'Gross Rate', render: (val) => `$${(val || 0).toLocaleString()}` },
+    { key: 'dispatchFee', label: 'Company Fee', render: (val, row) => `-$${(val !== undefined ? val : Math.round(row.rate * 0.08)).toLocaleString()}` },
+    { key: 'driverPayout', label: 'My Net Payout', render: (val, row) => (
+      <span className={styles.payout} style={{ color: 'var(--accent-gold)' }}>
+        ${(val !== undefined ? val : (row.rate - Math.round(row.rate * 0.08))).toLocaleString()}
+      </span>
     )},
     { key: 'status', label: 'Dispatch Status', render: (val) => <StatusBadge status={val} /> }
   ];

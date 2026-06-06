@@ -25,7 +25,7 @@ const ROLE_NAVIGATION = {
 };
 
 export default function DashboardLayout() {
-  const { user, login, logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -37,17 +37,6 @@ export default function DashboardLayout() {
   const handleLogout = () => {
     logout();
     navigate('/login');
-  };
-
-  const handlePortalSwitch = (role) => {
-    const emailMap = {
-      carrier: 'carrier@dispatchnow.com',
-      admin: 'admin@dispatchnow.com',
-    };
-    const res = login(emailMap[role], 'demo123');
-    if (res.success) {
-      navigate(getDashboardPath(role));
-    }
   };
 
   return (
@@ -126,19 +115,6 @@ export default function DashboardLayout() {
           </div>
 
           <div className={styles.topbarRight}>
-            {/* Quick Portal Switcher (Demo Sandbox feature) */}
-            <div className={styles.portalSwitcher}>
-              <select 
-                value={user.role} 
-                onChange={(e) => handlePortalSwitch(e.target.value)}
-                className={styles.switcherSelect}
-                title="Bypass login & switch portal view"
-              >
-                <option value="carrier">Carrier Portal</option>
-                <option value="admin">Admin Portal</option>
-              </select>
-            </div>
-
             <div className={styles.notifications}>
               <button className={styles.iconBtn}>
                 <Bell size={20} />

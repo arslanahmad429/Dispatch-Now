@@ -48,10 +48,10 @@ export default function MyIncome() {
     { key: 'id', label: 'Invoice Ref', render: (val) => `INV-${val.split('-')[1]}` },
     { key: 'date', label: 'Delivery Date' },
     { key: 'customer', label: 'Shipper' },
-    { key: 'rate', label: 'Gross Freight', render: (val) => `$${val.toLocaleString()}` },
-    { key: 'dispatchFee', label: 'Dispatch Cut', render: (val) => `-$${val.toLocaleString()}` },
-    { key: 'driverPayout', label: 'My Net Payout', render: (val) => (
-      <span className={styles.payout}>${val.toLocaleString()}</span>
+    { key: 'rate', label: 'Gross Freight', render: (val) => `$${(val || 0).toLocaleString()}` },
+    { key: 'dispatchFee', label: 'Dispatch Cut', render: (val, row) => `-$${(val !== undefined ? val : Math.round(row.rate * 0.08)).toLocaleString()}` },
+    { key: 'driverPayout', label: 'My Net Payout', render: (val, row) => (
+      <span className={styles.payout}>${(val !== undefined ? val : (row.rate - Math.round(row.rate * 0.08))).toLocaleString()}</span>
     )},
     { key: 'paymentStatus', label: 'Payout status', render: (val) => (
       <StatusBadge status={val === 'paid' ? 'paid' : 'pending'} />

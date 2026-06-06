@@ -102,7 +102,7 @@ export default function AddOrder() {
                 <option value="">-- Select Approved Carrier --</option>
                 {approvedCarriers.map(c => (
                   <option key={c.id} value={c.email}>
-                    {c.name} ({c.mcNumber} - {c.carrierType.toUpperCase()})
+                    {c.name} ({c.mcNumber})
                   </option>
                 ))}
               </select>
