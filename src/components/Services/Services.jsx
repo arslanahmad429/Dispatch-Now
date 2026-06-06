@@ -1,5 +1,6 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Search, DollarSign, FileText, Map, Handshake,
   PhoneCall, Clock, Shield, TrendingUp, Zap
@@ -12,54 +13,63 @@ const services = [
     title: "Load Finding",
     description: "We search all major load boards — DAT, Truckstop, 123Loadboard — to find the best freight matching your equipment and preferred lanes.",
     tag: "Core Service",
+    link: "/blog/mastering-the-lanes"
   },
   {
     icon: <DollarSign size={28} />,
     title: "Rate Negotiation",
     description: "Our experienced dispatchers negotiate aggressively with brokers to maximize your rate per mile. We consistently beat average market rates by 10-20%.",
     tag: "Top Feature",
+    link: "/blog/maximize-truck-earnings"
   },
   {
     icon: <FileText size={28} />,
     title: "Paperwork & Admin",
     description: "We handle all rate confirmations, broker setup packets, and load documentation. You sign nothing until we have reviewed everything for you.",
     tag: "Time Saver",
+    link: "/blog/navigating-usdot-compliance"
   },
   {
     icon: <Map size={28} />,
     title: "Route Planning",
     description: "We plan your weekly routes to minimize deadhead miles (empty driving) and maximize your total weekly revenue per truck.",
     tag: "Smart Routing",
+    link: "/blog/mastering-the-lanes"
   },
   {
     icon: <Handshake size={28} />,
     title: "Broker Relationships",
     description: "We have established relationships with hundreds of top freight brokers nationwide, giving you access to premium loads that others do not see.",
     tag: "Network",
+    link: "/blog/manual-dispatching-secrets"
   },
   {
     icon: <PhoneCall size={28} />,
     title: "24/7 Dispatcher Support",
     description: "Our dispatchers are always on call. Whether you break down at 2am or need a reload found quickly, we are here for you around the clock.",
     tag: "24/7",
+    link: "/blog/manual-dispatching-secrets"
   },
   {
     icon: <Clock size={28} />,
     title: "Quick Check Calls",
     description: "We handle all check calls with brokers so you never have to pull over. We update shippers and receivers with your ETA in real time.",
     tag: "Communication",
+    link: "/blog/manual-dispatching-secrets"
   },
   {
     icon: <Shield size={28} />,
     title: "Contract Protection",
     description: "We review all broker agreements to ensure your interests are protected. No hidden clauses, no surprises. We guard your MC authority.",
     tag: "Legal",
+    link: "/blog/navigating-usdot-compliance"
   },
   {
     icon: <TrendingUp size={28} />,
     title: "Performance Analytics",
     description: "Get weekly reports on miles driven, revenue earned, and rate per mile. We track your performance so you always know how profitable you are.",
     tag: "Analytics",
+    link: "/blog/maximize-truck-earnings"
   },
 ];
 
@@ -99,13 +109,24 @@ export default function Services() {
               transition={{ duration: 0.5, delay: 0.1 + i * 0.07, ease: [0.4, 0, 0.2, 1] }}
               whileHover={{ y: -6, transition: { duration: 0.2 } }}
             >
-              <div className={styles.serviceTag}>{service.tag}</div>
-              <div className={styles.serviceIcon}>{service.icon}</div>
-              <h3 className={styles.serviceTitle}>{service.title}</h3>
-              <p className={styles.serviceDesc}>{service.description}</p>
-              <div className={styles.serviceArrow}>
-                <Zap size={14} /> Learn more
-              </div>
+              <Link 
+                to={service.link} 
+                style={{ 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  height: '100%', 
+                  textDecoration: 'none', 
+                  color: 'inherit' 
+                }}
+              >
+                <div className={styles.serviceTag}>{service.tag}</div>
+                <div className={styles.serviceIcon}>{service.icon}</div>
+                <h3 className={styles.serviceTitle}>{service.title}</h3>
+                <p className={styles.serviceDesc}>{service.description}</p>
+                <div className={styles.serviceArrow}>
+                  <Zap size={14} /> Learn more
+                </div>
+              </Link>
             </motion.div>
           ))}
         </div>

@@ -1,17 +1,12 @@
 import { useState } from 'react';
-import { ArrowRight, Check } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ArrowRight, Check, Info } from 'lucide-react';
 import styles from './PricingPage.module.css';
 
 export default function PricingPage() {
-  const [revenue, setRevenue] = useState(6000);
-  const [trucks, setTrucks] = useState(1);
+  const [revenue, setRevenue] = useState(7500);
 
-  const getPercentage = () => {
-    if (trucks >= 3) return 6; // Fleet
-    return 8; // Solo
-  };
-
-  const dispatchFee = Math.round(revenue * (getPercentage() / 100));
+  const dispatchFee = Math.round(revenue * 0.08);
   const netEarnings = revenue - dispatchFee;
 
   return (
@@ -20,58 +15,54 @@ export default function PricingPage() {
         <div className="container">
           <div className={styles.header}>
             <span className="section-label">Transparent Rates</span>
-            <h2 className="section-title">No Load, <span className="highlight">No Dispatch Fee</span></h2>
-            <p className="section-subtitle">We only get paid when you do. No sign-up fees, no contracts, cancel at any time.</p>
+            <h2 className="section-title">Flat Rate Dispatch. <span className="highlight">No Load, No Fee</span></h2>
+            <p className="section-subtitle">We only earn when you haul. No sign-up deposits, no locked contracts, cancel our service at any time.</p>
           </div>
 
-          <div className={styles.pricingCards}>
-            <div className={styles.pricingCard}>
+          <div style={{ display: 'flex', justifyContent: 'center', margin: '40px 0' }}>
+            <div className={`${styles.pricingCard} ${styles.featuredCard}`} style={{ maxWidth: '450px', width: '100%' }}>
+              <div className={styles.featuredBadge}>Flat Fee</div>
               <div className={styles.cardHeader}>
-                <h3>Solo Operator</h3>
+                <h3>Professional Dispatch</h3>
                 <div className={styles.price}>8%</div>
-                <p>Gross per load</p>
+                <p>Gross per load booked</p>
               </div>
-              <ul className={styles.features}>
-                <li><Check size={16} /> Dedicated dispatcher</li>
-                <li><Check size={16} /> Unlimited loads per week</li>
-                <li><Check size={16} /> All rate confirmations & setup</li>
-                <li><Check size={16} /> Credit checks on brokers</li>
-                <li><Check size={16} /> Invoice & factoring setups</li>
-              </ul>
-              <a href="/register/carrier" className="btn-primary">Get Started <ArrowRight size={16} /></a>
-            </div>
+              
+              <div style={{ 
+                display: 'flex', 
+                gap: '8px', 
+                padding: '12px', 
+                background: 'rgba(255, 215, 0, 0.05)', 
+                border: '1px solid rgba(255, 215, 0, 0.1)', 
+                borderRadius: '6px',
+                fontSize: '0.8rem',
+                color: 'var(--text-secondary)',
+                lineHeight: '1.4',
+                marginBottom: '20px',
+                textAlign: 'left'
+              }}>
+                <Info size={18} style={{ color: 'var(--accent-gold)', flexShrink: 0 }} />
+                <span>
+                  <strong>Individual Registry Policy:</strong> Each driver profile must register a single vehicle. Fleet accounts are not supported; separate truck plate profiles must be created for safety compliance integrity.
+                </span>
+              </div>
 
-            <div className={`${styles.pricingCard} ${styles.featuredCard}`}>
-              <div className={styles.featuredBadge}>Best Value</div>
-              <div className={styles.cardHeader}>
-                <h3>Fleet Plan (3+ Trucks)</h3>
-                <div className={styles.price}>6%</div>
-                <p>Gross per load</p>
-              </div>
               <ul className={styles.features}>
-                <li><Check size={16} /> Fleet dedicated dispatcher team</li>
-                <li><Check size={16} /> Unified invoice management</li>
-                <li><Check size={16} /> Priority lane planning</li>
-                <li><Check size={16} /> Direct safety & compliance portal</li>
-                <li><Check size={16} /> Weekly analytics reporting</li>
+                <li><Check size={16} color="var(--accent-gold)" /> Dedicated manual dispatcher negotiator</li>
+                <li><Check size={16} color="var(--accent-gold)" /> Unlimited spot loads scoured per week</li>
+                <li><Check size={16} color="var(--accent-gold)" /> 5-Document compliance filing checks</li>
+                <li><Check size={16} color="var(--accent-gold)" /> Real-time broker credit score auditing</li>
+                <li><Check size={16} color="var(--accent-gold)" /> Instant factoring paperwork setups</li>
+                <li><Check size={16} color="var(--accent-gold)" /> 24/7 WhatsApp emergency dispatcher updates</li>
               </ul>
-              <a href="/register/carrier" className="btn-primary" style={{ background: '#FFF', color: '#000' }}>Get Started <ArrowRight size={16} /></a>
-            </div>
-
-            <div className={styles.pricingCard}>
-              <div className={styles.cardHeader}>
-                <h3>Dedicated Dispatch</h3>
-                <div className={styles.price}>$320</div>
-                <p>Flat weekly fee per truck</p>
-              </div>
-              <ul className={styles.features}>
-                <li><Check size={16} /> Fix cost budget control</li>
-                <li><Check size={16} /> Dedicated lane scheduling</li>
-                <li><Check size={16} /> 24/7 dispatcher availability</li>
-                <li><Check size={16} /> Multi-stop and local drops</li>
-                <li><Check size={16} /> Cancel at any time</li>
-              </ul>
-              <a href="/register/carrier" className="btn-primary">Get Started <ArrowRight size={16} /></a>
+              
+              <Link 
+                to="/register/carrier" 
+                className="btn-primary" 
+                style={{ width: '100%', justifyContent: 'center', marginTop: '20px', background: 'var(--accent-gold)', color: '#000' }}
+              >
+                Apply as Driver <ArrowRight size={16} />
+              </Link>
             </div>
           </div>
         </div>
@@ -82,42 +73,40 @@ export default function PricingPage() {
         <div className="container">
           <div className={styles.calcWrapper}>
             <div className={styles.calcLeft}>
-              <h2>Calculate Your Earnings</h2>
-              <p>Drag the slider below to select your estimated weekly gross revenue. See how much Dispatch Now will save you.</p>
+              <h2>Calculate Your Settlement Yield</h2>
+              <p>Drag the slider below to select your estimated weekly gross freight billings and see your net payouts after the 8% fee.</p>
 
-              <div className={styles.inputGroup}>
-                <label>Weekly Gross Revenue: <strong>${revenue.toLocaleString()}</strong></label>
+              <div className={styles.inputGroup} style={{ marginTop: '30px' }}>
+                <label style={{ display: 'flex', justifyContent: 'space-between', fontWeight: '600' }}>
+                  <span>Weekly Gross Billings:</span>
+                  <strong style={{ color: 'var(--accent-gold)', fontSize: '1.15rem' }}>${revenue.toLocaleString()}</strong>
+                </label>
                 <input 
                   type="range" 
-                  min="2000" 
+                  min="3000" 
                   max="15000" 
                   step="500" 
                   value={revenue} 
                   onChange={(e) => setRevenue(Number(e.target.value))} 
                   className={styles.rangeInput}
+                  style={{ width: '100%', height: '6px', background: 'var(--border)', borderRadius: '3px', outline: 'none', marginTop: '10px' }}
                 />
-              </div>
-
-              <div className={styles.inputGroup}>
-                <label>Number of Trucks:</label>
-                <div className={styles.btnGroup}>
-                  <button className={trucks === 1 ? styles.btnActive : ''} onClick={() => setTrucks(1)}>1 Truck</button>
-                  <button className={trucks === 3 ? styles.btnActive : ''} onClick={() => setTrucks(3)}>3+ Trucks (Fleet)</button>
-                </div>
               </div>
             </div>
 
             <div className={styles.calcRight}>
               <div className={styles.calcStat}>
-                <span>Dispatch Fee ({getPercentage()}%)</span>
-                <h3>${dispatchFee.toLocaleString()}</h3>
+                <span>Dispatch Fee (8% Flat Cut)</span>
+                <h3 style={{ color: '#ef4444' }}>-${dispatchFee.toLocaleString()}</h3>
               </div>
               <div className={styles.calcStat}>
-                <span>Your Net Weekly Revenue</span>
-                <h2 className="gradient-text">${netEarnings.toLocaleString()}</h2>
+                <span>Your Net Weekly Settlement</span>
+                <h2 className="gradient-text" style={{ color: '#10B981', fontSize: '2.5rem', fontWeight: 'bold' }}>
+                  ${netEarnings.toLocaleString()}
+                </h2>
               </div>
               <div className={styles.calcFoot}>
-                <p>Based on estimated broker rates. Actual revenue may vary by equipment type and lanes selected.</p>
+                <p>Actual revenue yields fluctuate depending on carrier equipment profile (flatbed vs dry-van) and selected highway lanes.</p>
               </div>
             </div>
           </div>
