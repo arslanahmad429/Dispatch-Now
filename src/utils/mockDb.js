@@ -8,6 +8,8 @@ const INITIAL_CARRIERS = [
     phone: "(555) 987-6543",
     mcNumber: "MC-928103",
     dotNumber: "DOT-817293",
+    truckNumber: "TRK-9821",
+    licenseNumber: "DL-CA928103",
     equipment: "flatbed",
     carrierType: "solo",
     status: "approved",
@@ -22,6 +24,8 @@ const INITIAL_CARRIERS = [
     phone: "(555) 456-7890",
     mcNumber: "MC-719329",
     dotNumber: "DOT-192837",
+    truckNumber: "TRK-7193",
+    licenseNumber: "DL-IL719329",
     equipment: "dry-van",
     carrierType: "fleet",
     status: "pending",
@@ -36,6 +40,8 @@ const INITIAL_CARRIERS = [
     phone: "(555) 123-4567",
     mcNumber: "MC-301284",
     dotNumber: "DOT-382910",
+    truckNumber: "TRK-3012",
+    licenseNumber: "DL-TX301284",
     equipment: "reefer",
     carrierType: "solo",
     status: "approved",
@@ -55,6 +61,7 @@ const INITIAL_ORDERS = [
     status: "dispatched",
     carrier: "Marcus Williams",
     carrierEmail: "carrier@dispatchnow.com",
+    truckNumber: "TRK-9821",
     dispatcher: "Sarah Mitchell",
     weight: "42,000 lbs",
     commodity: "Steel Pipes",
@@ -78,6 +85,7 @@ const INITIAL_ORDERS = [
     status: "in-transit",
     carrier: "John Doe",
     carrierEmail: "john@jdexpress.com",
+    truckNumber: "TRK-7193",
     dispatcher: "Sarah Mitchell",
     weight: "38,500 lbs",
     commodity: "General Merchandise",
@@ -102,6 +110,7 @@ const INITIAL_ORDERS = [
     status: "delivered",
     carrier: "Marcus Williams",
     carrierEmail: "carrier@dispatchnow.com",
+    truckNumber: "TRK-9821",
     dispatcher: "Sarah Mitchell",
     weight: "8,000 lbs",
     commodity: "Drill Pipes",
@@ -166,6 +175,8 @@ export function addCarrier(carrierData) {
     phone: carrierData.phone,
     mcNumber: carrierData.mcNumber.startsWith("MC-") ? carrierData.mcNumber : `MC-${carrierData.mcNumber}`,
     dotNumber: carrierData.dotNumber ? (carrierData.dotNumber.startsWith("DOT-") ? carrierData.dotNumber : `DOT-${carrierData.dotNumber}`) : "N/A",
+    truckNumber: carrierData.truckNumber || "N/A",
+    licenseNumber: carrierData.licenseNumber || "N/A",
     equipment: carrierData.equipment,
     carrierType: carrierData.carrierType || "solo",
     password: carrierData.password, // Storing password for universal mock login
@@ -212,6 +223,7 @@ export function addOrder(orderData) {
     status: "dispatched",
     carrier: carrier ? carrier.name : orderData.carrierName || "Unknown",
     carrierEmail: orderData.carrierEmail.toLowerCase(),
+    truckNumber: carrier ? carrier.truckNumber : "N/A",
     dispatcher: "Sarah Mitchell", // Default admin dispatcher
     weight: orderData.weight || "N/A",
     commodity: orderData.commodity || "General Freight",
@@ -228,7 +240,7 @@ export function addOrder(orderData) {
       { 
         status: "dispatched", 
         time: new Date().toISOString().replace("T", " ").substring(0, 16), 
-        note: `Assigned and dispatched to carrier ${carrier ? carrier.name : orderData.carrierEmail}` 
+        note: `Assigned and dispatched to carrier ${carrier ? carrier.name : orderData.carrierEmail} driving truck ${carrier ? carrier.truckNumber : 'N/A'}` 
       }
     ]
   };

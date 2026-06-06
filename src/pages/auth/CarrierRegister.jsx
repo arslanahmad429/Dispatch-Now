@@ -14,6 +14,8 @@ export default function CarrierRegister() {
     phone: '',
     mcNumber: '',
     dotNumber: '',
+    truckNumber: '',
+    licenseNumber: '',
     equipment: 'dry-van',
     carrierType: 'solo',
     password: '',
@@ -58,6 +60,14 @@ export default function CarrierRegister() {
     }
     if (!phoneRegex.test(formData.phone)) {
       setError('Please enter a valid 10-digit US phone number, e.g. (555) 123-4567');
+      return;
+    }
+    if (!formData.truckNumber || formData.truckNumber.trim().length < 3) {
+      setError('Please enter a valid Truck Plate/Number, e.g. TRK-9821');
+      return;
+    }
+    if (!formData.licenseNumber || formData.licenseNumber.trim().length < 4) {
+      setError('Please enter a valid Driver License Number');
       return;
     }
     if (!mcRegex.test(formData.mcNumber)) {
@@ -155,6 +165,37 @@ export default function CarrierRegister() {
                 value={formData.phone}
                 onChange={handleChange}
                 required
+              />
+            </div>
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+          <div className={styles.inputGroup}>
+            <label>Truck Plate/Number *</label>
+            <div className={styles.inputWrapper}>
+              <input 
+                name="truckNumber"
+                type="text" 
+                placeholder="TRK-9821" 
+                value={formData.truckNumber}
+                onChange={handleChange}
+                required
+                style={{ paddingLeft: '16px' }}
+              />
+            </div>
+          </div>
+          <div className={styles.inputGroup}>
+            <label>Driver License Number *</label>
+            <div className={styles.inputWrapper}>
+              <input 
+                name="licenseNumber"
+                type="text" 
+                placeholder="DL-CA928103" 
+                value={formData.licenseNumber}
+                onChange={handleChange}
+                required
+                style={{ paddingLeft: '16px' }}
               />
             </div>
           </div>

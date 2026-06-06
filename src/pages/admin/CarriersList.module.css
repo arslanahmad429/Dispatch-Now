@@ -16,6 +16,61 @@
   color: var(--text-secondary);
 }
 
+/* Filter Bar Styles */
+.filterBar {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  box-shadow: var(--shadow-sm);
+}
+
+.filterGroup {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  flex-grow: 1;
+}
+
+.filterInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.filterInputWrapper input {
+  padding-left: 36px !important;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.filterGroup input, .filterGroup select {
+  padding: 10px 14px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-family: var(--font);
+  outline: none;
+  transition: border-color 0.2s ease;
+  min-width: 140px;
+}
+
+.filterGroup input:focus, .filterGroup select:focus {
+  border-color: var(--accent-gold);
+}
+
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border);
