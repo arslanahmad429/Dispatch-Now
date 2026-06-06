@@ -99,7 +99,7 @@ export default function HowItWorks() {
         >
           <p>Ready to get started? It takes less than 5 minutes to sign up.</p>
           <Link
-            to="/contact"
+            to="/register/carrier"
             className="btn-primary"
           >
             Get My First Load →

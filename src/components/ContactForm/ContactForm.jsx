@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Send, CheckCircle, Phone, Mail, MapPin, Truck } from 'lucide-react';
+import Drawer from '../shared/Drawer';
 import styles from './ContactForm.module.css';
 
 const equipmentOptions = [
@@ -18,6 +19,7 @@ const equipmentOptions = [
 export default function ContactForm() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-80px' });
+  const [activePolicy, setActivePolicy] = useState(null); // 'privacy' | 'terms' | null
 
   const [form, setForm] = useState({
     name: '',
@@ -222,7 +224,7 @@ export default function ContactForm() {
                   </div>
 
                   <div className={styles.row}>
-                    <div className={styles.field}>
+                    <div className={styles.field} style={{ flex: '1 1 100%' }}>
                       <label className={styles.label} htmlFor="equipment">Equipment Type *</label>
                       <select
                         id="equipment"
@@ -237,22 +239,6 @@ export default function ContactForm() {
                         ))}
                       </select>
                       {errors.equipment && <span className={styles.error}>{errors.equipment}</span>}
-                    </div>
-                    <div className={styles.field}>
-                      <label className={styles.label} htmlFor="trucks">Number of Trucks</label>
-                      <select
-                        id="trucks"
-                        name="trucks"
-                        value={form.trucks}
-                        onChange={handleChange}
-                        className={styles.select}
-                      >
-                        <option value="">Select...</option>
-                        <option value="1">1 Truck</option>
-                        <option value="2-5">2–5 Trucks</option>
-                        <option value="6-10">6–10 Trucks</option>
-                        <option value="10+">10+ Trucks</option>
-                      </select>
                     </div>
                   </div>
 
@@ -279,8 +265,22 @@ export default function ContactForm() {
                         className={styles.checkbox}
                       />
                       <span>
-                        I agree to the <a href="#" className={styles.link}>Terms of Service</a> and{' '}
-                        <a href="#" className={styles.link}>Privacy Policy</a>. I understand Dispatch Now
+                        I agree to the{' '}
+                        <a 
+                          href="#" 
+                          className={styles.link} 
+                          onClick={(e) => { e.preventDefault(); setActivePolicy('terms'); }}
+                        >
+                          Terms of Service
+                        </a>{' '}
+                        and{' '}
+                        <a 
+                          href="#" 
+                          className={styles.link} 
+                          onClick={(e) => { e.preventDefault(); setActivePolicy('privacy'); }}
+                        >
+                          Privacy Policy
+                        </a>. I understand Dispatch Now
                         is a dispatching service, not a freight broker.
                       </span>
                     </label>
@@ -309,6 +309,33 @@ export default function ContactForm() {
           </motion.div>
         </div>
       </div>
+
+      {/* ===== DRAWER OVERLAYS FOR LEGAL POLICIES ===== */}
+      <Drawer isOpen={activePolicy === 'privacy'} onClose={() => setActivePolicy(null)} title="Privacy Policy">
+        <div style={{ lineHeight: '1.6', color: 'var(--text-secondary)' }}>
+          <h4 style={{ color: 'var(--text-primary)', marginTop: '20px', marginBottom: '8px' }}>1. Information We Collect</h4>
+          <p>We collect essential commercial credentials during your onboarding process, including your name, email address, phone number, active Driver License (CDL), vehicle plate registration papers, physical truck photographs, headshot photographs, national ID cards, and Motor Carrier (MC) authority credentials.</p>
+          
+          <h4 style={{ color: 'var(--text-primary)', marginTop: '20px', marginBottom: '8px' }}>2. Data Storage Integrity</h4>
+          <p>All compliance documents, profile information, and load dispatch sheets are stored locally inside your browser's sandbox namespace (<code>localStorage</code>) to maintain system integrity offline. No personal data is sent to external advertising or tracking platforms.</p>
+          
+          <h4 style={{ color: 'var(--text-primary)', marginTop: '20px', marginBottom: '8px' }}>3. How We Use Credentials</h4>
+          <p>We use driver details and compliance papers to coordinate manual dispatches with US shippers and freight brokers. Registered truck license plates and MC numbers are cross-audited in our database to ensure that duplicate registrations are blocked.</p>
+        </div>
+      </Drawer>
+
+      <Drawer isOpen={activePolicy === 'terms'} onClose={() => setActivePolicy(null)} title="Terms of Service">
+        <div style={{ lineHeight: '1.6', color: 'var(--text-secondary)' }}>
+          <h4 style={{ color: 'var(--text-primary)', marginTop: '20px', marginBottom: '8px' }}>1. Carrier Registry Requirements</h4>
+          <p>We operate on an individual driver-to-truck registration model. Fleet registrations or bulk account creations are not supported. Every driver must register himself with his specific truck plate number. Unique plates and MC codes are strictly checked upon sign-up.</p>
+
+          <h4 style={{ color: 'var(--text-primary)', marginTop: '20px', marginBottom: '8px' }}>2. Service Fees & Payout Cut</h4>
+          <p>We charge a flat <strong>8% dispatch service fee</strong> of the gross rate of the load. We do not deduct additional hidden fees. Invoices are generated automatically in the financial ledger, displaying your gross billing and net payouts clearly.</p>
+
+          <h4 style={{ color: 'var(--text-primary)', marginTop: '20px', marginBottom: '8px' }}>3. Manual Billing Settlements</h4>
+          <p>Carriers are required to upload proof of delivery (signed Bill of Lading and a parcel drop-off photo) in the driver portal to initiate factoring release. Logistics administrators review these uploads and release payments manually outside this offline demo client.</p>
+        </div>
+      </Drawer>
     </section>
   );
 }

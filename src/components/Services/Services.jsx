@@ -34,28 +34,28 @@ const services = [
     title: "Route Planning",
     description: "We plan your weekly routes to minimize deadhead miles (empty driving) and maximize your total weekly revenue per truck.",
     tag: "Smart Routing",
-    link: "/blog/mastering-the-lanes"
+    link: "/blog/fuel-and-route-optimization"
   },
   {
     icon: <Handshake size={28} />,
     title: "Broker Relationships",
     description: "We have established relationships with hundreds of top freight brokers nationwide, giving you access to premium loads that others do not see.",
     tag: "Network",
-    link: "/blog/manual-dispatching-secrets"
+    link: "/blog/broker-relationships-guide"
   },
   {
     icon: <PhoneCall size={28} />,
     title: "24/7 Dispatcher Support",
     description: "Our dispatchers are always on call. Whether you break down at 2am or need a reload found quickly, we are here for you around the clock.",
     tag: "24/7",
-    link: "/blog/manual-dispatching-secrets"
+    link: "/blog/broker-relationships-guide"
   },
   {
     icon: <Clock size={28} />,
     title: "Quick Check Calls",
     description: "We handle all check calls with brokers so you never have to pull over. We update shippers and receivers with your ETA in real time.",
     tag: "Communication",
-    link: "/blog/manual-dispatching-secrets"
+    link: "/blog/broker-relationships-guide"
   },
   {
     icon: <Shield size={28} />,
@@ -103,14 +103,15 @@ export default function Services() {
           {services.map((service, i) => (
             <motion.div
               key={service.title}
-              className={styles.serviceCard}
               initial={{ opacity: 0, y: 40 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.1 + i * 0.07, ease: [0.4, 0, 0.2, 1] }}
               whileHover={{ y: -6, transition: { duration: 0.2 } }}
+              style={{ height: '100%' }}
             >
               <Link 
                 to={service.link} 
+                className={styles.serviceCard}
                 style={{ 
                   display: 'flex', 
                   flexDirection: 'column', 

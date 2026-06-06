@@ -21,10 +21,10 @@ export default function AdminDashboard() {
   const columns = [
     { key: 'id', label: 'Order ID', sortable: true },
     { key: 'customer', label: 'Shipper' },
-    { key: 'pickup', label: 'Lanes', render: (_, row) => `${row.pickup.split(',')[0]} → ${row.delivery.split(',')[0]}` },
+    { key: 'pickup', label: 'Lanes', render: (_, row) => `${row.pickup ? row.pickup.split(',')[0] : 'N/A'} → ${row.delivery ? row.delivery.split(',')[0] : 'N/A'}` },
     { key: 'carrier', label: 'Carrier Assigned', render: (val) => val || <span style={{ color: 'var(--text-muted)' }}>Unassigned</span> },
     { key: 'dispatcher', label: 'Dispatcher Assigned', render: (val) => val || <span style={{ color: 'var(--text-muted)' }}>Unassigned</span> },
-    { key: 'rate', label: 'Gross Rate', render: (val) => `$${val.toLocaleString()}` },
+    { key: 'rate', label: 'Gross Rate', render: (val) => `$${(val || 0).toLocaleString()}` },
     { key: 'status', label: 'Status', render: (val) => <StatusBadge status={val} /> }
   ];
 

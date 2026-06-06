@@ -161,7 +161,7 @@ export default function Equipment() {
                 <span className={styles.laneValue}>{activeEq.laneExample}</span>
               </div>
               <Link
-                to="/contact"
+                to="/register/carrier"
                 className="btn-primary"
                 style={{ background: activeEq.color }}
               >

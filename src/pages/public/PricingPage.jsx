@@ -19,8 +19,10 @@ export default function PricingPage() {
             <p className="section-subtitle">We only earn when you haul. No sign-up deposits, no locked contracts, cancel our service at any time.</p>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'center', margin: '40px 0' }}>
-            <div className={`${styles.pricingCard} ${styles.featuredCard}`} style={{ maxWidth: '450px', width: '100%' }}>
+          <div className={styles.pricingSectionGrid}>
+            
+            {/* 8% Pricing Card */}
+            <div className={`${styles.pricingCard} ${styles.featuredCard}`}>
               <div className={styles.featuredBadge}>Flat Fee</div>
               <div className={styles.cardHeader}>
                 <h3>Professional Dispatch</h3>
@@ -30,21 +32,21 @@ export default function PricingPage() {
               
               <div style={{ 
                 display: 'flex', 
-                gap: '8px', 
-                padding: '12px', 
+                gap: '10px', 
+                padding: '16px', 
                 background: 'rgba(255, 215, 0, 0.05)', 
                 border: '1px solid rgba(255, 215, 0, 0.1)', 
-                borderRadius: '6px',
-                fontSize: '0.8rem',
+                borderRadius: '8px',
+                fontSize: '0.85rem',
                 color: 'var(--text-secondary)',
-                lineHeight: '1.4',
+                lineHeight: '1.5',
                 marginBottom: '20px',
                 textAlign: 'left'
               }}>
-                <Info size={18} style={{ color: 'var(--accent-gold)', flexShrink: 0 }} />
-                <span>
-                  <strong>Individual Registry Policy:</strong> Each driver profile must register a single vehicle. Fleet accounts are not supported; separate truck plate profiles must be created for safety compliance integrity.
-                </span>
+                <Info size={18} style={{ color: 'var(--accent-gold)', flexShrink: 0, marginTop: '2px' }} />
+                <div>
+                  <strong>Individual Registry Policy:</strong> Fleet accounts are not supported. There is no concept of bulk fleet registration. Every driver must register himself along with his specific truck or vehicle. If a carrier has multiple trucks, each vehicle must be registered under its own unique driver profile to maintain DOT plate uniqueness integrity.
+                </div>
               </div>
 
               <ul className={styles.features}>
@@ -63,6 +65,56 @@ export default function PricingPage() {
               >
                 Apply as Driver <ArrowRight size={16} />
               </Link>
+            </div>
+
+            {/* Compliance Requirements Info */}
+            <div style={{
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-lg)',
+              padding: '40px',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center'
+            }}>
+              <h3 style={{ fontSize: '1.35rem', fontWeight: '700', marginBottom: '12px' }}>Compliance Onboarding Checks</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '24px' }}>
+                To safeguard the integrity of our dispatch network and ensure eligibility with top US freight brokers, every driver must upload the following <strong>5 compliance documents</strong> during registration. We enforce strict uniqueness checks on license plates and MC numbers.
+              </p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '12px' }}>
+                {[
+                  { label: "Driver License", desc: "Valid CDL card" },
+                  { label: "Truck Registration", desc: "Active plate paper" },
+                  { label: "Truck Photo", desc: "Clear profile view" },
+                  { label: "Driver Photo", desc: "Current headshot" },
+                  { label: "National ID Card", desc: "Government issued" }
+                ].map((doc, idx) => (
+                  <div key={idx} style={{
+                    padding: '12px',
+                    background: 'var(--bg-secondary)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '8px',
+                    textAlign: 'center'
+                  }}>
+                    <span style={{
+                      display: 'inline-flex',
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      background: 'rgba(255, 215, 0, 0.1)',
+                      color: 'var(--accent-gold)',
+                      fontSize: '11px',
+                      fontWeight: 'bold',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginBottom: '8px'
+                    }}>{idx + 1}</span>
+                    <h5 style={{ fontSize: '0.8rem', fontWeight: '700', color: 'var(--text-primary)', margin: '0 0 4px 0' }}>{doc.label}</h5>
+                    <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', margin: 0 }}>{doc.desc}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

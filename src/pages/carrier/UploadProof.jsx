@@ -1,22 +1,25 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { getMockDb, updateOrderStatus } from '../../utils/mockDb';
 import { FileText, Image, UploadCloud, CheckCircle, ArrowLeft, Truck } from 'lucide-react';
 import styles from './UploadProof.module.css';
 
 export default function UploadProof() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [load, setLoad] = useState(null);
   const [bolUploaded, setBolUploaded] = useState(false);
   const [photoUploaded, setPhotoUploaded] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (!user) return;
     const db = getMockDb();
-    // Carrier's active load that is not delivered yet
-    const active = db.orders.find(o => o.carrier === "Marcus Williams" && o.status !== "delivered");
+    // Carrier's active load that is not delivered yet matching logged-in carrier email
+    const active = db.orders.find(o => o.carrierEmail.toLowerCase() === user.email.toLowerCase() && o.status !== "delivered");
     setLoad(active || null);
-  }, []);
+  }, [user]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -31,7 +34,7 @@ export default function UploadProof() {
       });
       setLoading(false);
       if (res.success) {
-        navigate('/carrier/history');
+        navigate('/carrier/orders');
       }
     }, 1200);
   };

@@ -51,8 +51,8 @@ Here are the top 5 high-paying freight routes in 2026 and why they command premi
   },
   {
     id: "maximize-truck-earnings",
-    title: "How Dispatch Services Maximize Truck Earnings: Solo vs Fleet Rates",
-    summary: "Discover how professional manual dispatching helps carriers cut deadhead miles, negotiate broker listings, and scale revenue based on fleet size.",
+    title: "How Dispatch Services Maximize Truck Earnings: Our Flat 8% Model",
+    summary: "Discover how professional manual dispatching helps carriers cut deadhead miles, negotiate broker listings, and manage payments with a flat 8% payout structure.",
     content: `
 ## The Reality of Empty Miles (Deadhead)
 
@@ -60,14 +60,20 @@ The biggest threat to a truck driver's bottom line isn't fuel prices or toll roa
 
 By utilizing dedicated dispatch services, carriers can focus on driving while experts negotiate with brokers, handle paperwork, and solve route disruptions in real-time.
 
-### Solo Owner-Operators vs. Fleet Carriers
+### Streamlined Payouts: Flat 8% Fee System
 
-Our dispatch fee structure is built to match the scale of your business:
+Our dispatch system is built around complete pricing simplicity. There is **no concept of fleet registration** or volume pricing discounts under our new logistics architecture. Every vehicle operates on its own dedicated driver-carrier profile:
 
-| Carrier Type | Dispatch Fee | Best Suited For | Key Benefit |
+| Registration Mode | Service Fee | Compliance Requirement | Key Benefit |
 |---|---|---|---|
-| **Solo Owner-Operator** | **8% Flat Rate** | Single-truck operators who need load board scouring and broker negotiations. | Hands-off load matching so you can focus 100% on driving safely. |
-| **Fleet Carrier (2+ Trucks)** | **6% Flat Rate** | Fleet owners looking to optimize asset utilization across multiple trucks. | Volume discounts and synchronized route scheduling for maximum fleet efficiency. |
+| **Individual Registration** | **8% Flat Rate** | Single driver + single truck plate per profile. | Clean compliance tracking, direct accounting, and automated invoice verification. |
+
+### Why Single-Vehicle Registrations Exist
+
+To maintain safety compliance integrity and prevent fraudulent registrations, every driver must register themselves along with their specific truck plate. If you operate multiple trucks, each truck must have its own unique driver profile and MC verification. This ensures that:
+1. **Compliance Paperwork:** All 5 compliance documents (License, Registration, Truck Photo, Driver Photo, and ID) are 100% matched to the active driver.
+2. **Factoring Clearance:** Invoices are matched precisely to the correct vehicle plate for rapid factoring payout.
+3. **Dispatch Coordination:** Dispatchers communicate directly with the active driver of the vehicle without multi-tiered fleet forwarding errors.
 
 ### Why Manual Dispatching Beats Automated Algorithms
 
@@ -139,6 +145,53 @@ If a shipper needs a Reefer during produce season or a Flatbed in the spring con
     image: "/media/dispatcher_matching.png",
     date: "April 30, 2026",
     author: "Marcus Williams, Carrier Advisor",
+    readTime: "4 min read",
+    featured: false
+  },
+  {
+    id: "broker-relationships-guide",
+    title: "Building Long-Term Broker Partnerships: Accessing Off-Market Freight",
+    summary: "Learn how professional dispatchers negotiate with premier logistics networks to secure dedicated freight lines, avoiding the spot market race.",
+    content: `
+## The Advantage of Direct Broker Networks
+
+For most owner-operators, finding loads is a constant battle against thousands of other drivers on public load boards like DAT or Truckstop. However, the most profitable freights often never hit public boards. They are distributed directly to trusted dispatchers through private broker networks.
+
+Here is how our manual dispatch team leverages long-term relationships to keep your truck booked with premium freight:
+
+### 1. Pre-Scouring and Off-Market Access
+Our dispatchers stay in constant contact with national logistics networks. When a shipper releases high-volume freights, brokers contact us directly to check our drivers' availability. This lets us secure high-paying loads before they are visible to the general public.
+
+### 2. 24/7 Dispatcher Check-In and Support
+Brokers pay premium rates to carriers they can trust completely. We handle all check calls, ETA updates, and middle-of-the-night dispatch updates. By acting as your professional back-office, we build an approved, high-tier reputation for your MC authority, unlocking access to dedicated shipping lanes.
+
+### 3. Immediate Credit Verifications
+A high rate doesn't mean anything if the broker goes bankrupt before paying. Our team conducts real-time credit checks on brokers through factoring companies before booking any load, guarding you against payment delays or bad credit risks.
+    `,
+    image: "/media/warehouse_logistics.png",
+    date: "May 10, 2026",
+    author: "Marcus Williams, Carrier Advisor",
+    readTime: "5 min read",
+    featured: false
+  },
+  {
+    id: "fuel-and-route-optimization",
+    title: "Optimizing Route Efficiency and Fuel Costs: A Carrier's Guide",
+    summary: "Discover how smart route planning, regional freight hubs, and pre-planned backhauls keep drivers moving profitably in a volatile market.",
+    content: `
+## Driving Smarter, Not Harder
+
+In transportation logistics, fuel is your largest operating expense. Running empty miles (deadhead) or taking routes with high toll fees and mountain climbs can easily wipe out your week's earnings. Minimizing deadhead and mapping fuel-efficient lanes is key to keeping your net yield high.
+
+### The Strategy Behind Route Planning
+
+1. **Triangulation and Lane Loops:** Instead of booking a simple out-and-back load, our dispatchers map triangular route loops. For example, rather than returning empty from a low-volume delivery point, we dispatch you to a nearby high-volume hub first, maximizing your revenue per mile for the entire trip.
+2. **Toll and Terrain Auditing:** We plan routes around high-cost toll areas and mountain passes when load weight and fuel consumption make state highways more profitable.
+3. **Pre-Planners and Reloads:** We start sourcing your reload 24 hours before your active load is delivered. You sign the rate confirmation for your next load before unloading, ensuring zero downtime.
+    `,
+    image: "/media/highway_truck.png",
+    date: "May 03, 2026",
+    author: "Sarah Mitchell, Lead Dispatcher",
     readTime: "4 min read",
     featured: false
   }

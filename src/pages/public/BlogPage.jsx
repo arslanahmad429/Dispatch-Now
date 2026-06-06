@@ -41,7 +41,9 @@ export default function BlogPage() {
             transition={{ duration: 0.6 }}
           >
             <div className={styles.featuredImageWrapper}>
-              <img src={featuredPost.image} alt={featuredPost.title} className={styles.featuredImage} />
+              <Link to={`/blog/${featuredPost.id}`} style={{ display: 'block', height: '100%', width: '100%' }}>
+                <img src={featuredPost.image} alt={featuredPost.title} className={styles.featuredImage} />
+              </Link>
             </div>
             <div className={styles.featuredContent}>
               <div className={styles.metaRow}>
@@ -49,7 +51,9 @@ export default function BlogPage() {
                 <span className={styles.metaItem}><Calendar size={14} /> {featuredPost.date}</span>
                 <span className={styles.metaItem}><Clock size={14} /> {featuredPost.readTime}</span>
               </div>
-              <h2 className={styles.featuredTitle}>{featuredPost.title}</h2>
+              <Link to={`/blog/${featuredPost.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <h2 className={styles.featuredTitle}>{featuredPost.title}</h2>
+              </Link>
               <p className={styles.featuredSummary}>{featuredPost.summary}</p>
               <Link to={`/blog/${featuredPost.id}`} className={styles.readFeaturedBtn}>
                 Read Full Article <ArrowRight size={16} />
@@ -64,30 +68,31 @@ export default function BlogPage() {
           {gridPosts.map((post, idx) => (
             <motion.div 
               key={post.id}
-              className={styles.blogCard}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: idx * 0.1 }}
             >
-              <div className={styles.cardImageWrapper}>
-                <img src={post.image} alt={post.title} className={styles.cardImage} />
-                
-                {/* Transparent overlay visible on hover */}
-                <div className={styles.cardOverlay}>
-                  <p className={styles.overlayText}>{post.summary}</p>
-                  <Link to={`/blog/${post.id}`} className={styles.arrowButton} aria-label="Open article">
-                    <ArrowRight size={22} />
-                  </Link>
+              <Link to={`/blog/${post.id}`} className={styles.blogCard} style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column' }}>
+                <div className={styles.cardImageWrapper}>
+                  <img src={post.image} alt={post.title} className={styles.cardImage} />
+                  
+                  {/* Transparent overlay visible on hover */}
+                  <div className={styles.cardOverlay}>
+                    <p className={styles.overlayText}>{post.summary}</p>
+                    <div className={styles.arrowButton} aria-label="Open article">
+                      <ArrowRight size={22} />
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className={styles.cardContent}>
-                <div className={styles.cardMeta}>
-                  <span>{post.date}</span>
-                  <span>•</span>
-                  <span>{post.readTime}</span>
+                <div className={styles.cardContent}>
+                  <div className={styles.cardMeta}>
+                    <span>{post.date}</span>
+                    <span>•</span>
+                    <span>{post.readTime}</span>
+                  </div>
+                  <h4 className={styles.cardTitle}>{post.title}</h4>
                 </div>
-                <h4 className={styles.cardTitle}>{post.title}</h4>
-              </div>
+              </Link>
             </motion.div>
           ))}
         </div>

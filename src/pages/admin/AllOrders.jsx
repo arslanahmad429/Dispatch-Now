@@ -80,7 +80,7 @@ export default function AllOrders() {
       </div>
     )},
     { key: 'equipment', label: 'Equipment' },
-    { key: 'rate', label: 'Price (Gross)', sortable: true, render: (val) => `$${val.toLocaleString()}` },
+    { key: 'rate', label: 'Price (Gross)', sortable: true, render: (val) => `$${(val || 0).toLocaleString()}` },
     { key: 'status', label: 'Manage Status', render: (val, row) => (
       <select 
         value={val} 

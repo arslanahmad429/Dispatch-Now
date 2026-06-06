@@ -47,8 +47,8 @@ export default function CarriersList() {
 
   // Filter carriers in-memory
   const filteredCarriers = carriers.filter(c => {
-    const matchesName = !filters.name || c.name.toLowerCase().includes(filters.name.toLowerCase());
-    const matchesPhone = !filters.phone || c.phone.includes(filters.phone);
+    const matchesName = !filters.name || (c.name && c.name.toLowerCase().includes(filters.name.toLowerCase()));
+    const matchesPhone = !filters.phone || (c.phone && c.phone.includes(filters.phone));
     const matchesTruck = !filters.truckNo || (c.truckNumber && c.truckNumber.toLowerCase().includes(filters.truckNo.toLowerCase()));
     const matchesLicense = !filters.licenseNo || (c.licenseNumber && c.licenseNumber.toLowerCase().includes(filters.licenseNo.toLowerCase()));
     const matchesStatus = !filters.status || c.status === filters.status;

@@ -25,13 +25,13 @@ export default function AdminPayments() {
   };
 
   const columns = [
-    { key: 'id', label: 'Billing INV', sortable: true, render: (val) => `INV-${val.split('-')[1]}` },
+    { key: 'id', label: 'Billing INV', sortable: true, render: (val) => val ? (val.includes('-') ? `INV-${val.split('-')[1]}` : `INV-${val.substring(0, 6)}`) : 'INV-N/A' },
     { key: 'customer', label: 'Shipper' },
     { key: 'carrier', label: 'Assigned Driver', render: (val) => val || "None" },
     { key: 'rate', label: 'Gross Freight', sortable: true, render: (val) => `$${(val || 0).toLocaleString()}` },
-    { key: 'dispatchFee', label: 'Dispatch Cut', render: (val, row) => `-$${(val !== undefined ? val : Math.round(row.rate * 0.08)).toLocaleString()}` },
+    { key: 'dispatchFee', label: 'Dispatch Cut', render: (val, row) => `-$${(val !== undefined ? val : Math.round((row.rate || 0) * 0.08)).toLocaleString()}` },
     { key: 'driverPayout', label: 'Driver Payout', render: (val, row) => (
-      <span style={{ fontWeight: '600' }}>${(val !== undefined ? val : (row.rate - Math.round(row.rate * 0.08))).toLocaleString()}</span>
+      <span style={{ fontWeight: '600' }}>${(val !== undefined ? val : ((row.rate || 0) - Math.round((row.rate || 0) * 0.08))).toLocaleString()}</span>
     )},
     { key: 'status', label: 'Delivery Status', render: (val) => <StatusBadge status={val} /> },
     { key: 'paymentStatus', label: 'Payout status', render: (val) => (
