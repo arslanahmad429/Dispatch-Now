@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Mail, Phone, Truck, Lock, ArrowRight, FileText, UploadCloud } from 'lucide-react';
+import { Mail, Phone, Truck, Lock, ArrowRight, UploadCloud } from 'lucide-react';
 import styles from './Login.module.css'; // Reusing form classes
 
 export default function CarrierRegister() {
@@ -15,6 +15,7 @@ export default function CarrierRegister() {
     mcNumber: '',
     dotNumber: '',
     equipment: 'dry-van',
+    carrierType: 'solo',
     password: '',
   });
   const [docs, setDocs] = useState({
@@ -35,18 +36,54 @@ export default function CarrierRegister() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.mcNumber || !formData.password) {
-      setError('Please fill in all required fields');
+    setError('');
+
+    // Form data integrity checks
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+    const mcRegex = /^(MC-)?[0-9]{6,7}$/i;
+    const dotRegex = /^(DOT-)?[0-9]{7,8}$/i;
+
+    if (!formData.firstName || formData.firstName.trim().length < 2) {
+      setError('First name must be at least 2 characters');
       return;
     }
-    setError('');
+    if (!formData.lastName || formData.lastName.trim().length < 2) {
+      setError('Last name must be at least 2 characters');
+      return;
+    }
+    if (!emailRegex.test(formData.email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+    if (!phoneRegex.test(formData.phone)) {
+      setError('Please enter a valid 10-digit US phone number, e.g. (555) 123-4567');
+      return;
+    }
+    if (!mcRegex.test(formData.mcNumber)) {
+      setError('Please enter a valid MC number, e.g. MC-123456 (6-7 digits)');
+      return;
+    }
+    if (formData.dotNumber && !dotRegex.test(formData.dotNumber)) {
+      setError('Please enter a valid USDOT number, e.g. DOT-1234567 (7-8 digits)');
+      return;
+    }
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+    if (!docs.authority || !docs.insurance || !docs.w9) {
+      setError('Please upload all required carrier verification documents');
+      return;
+    }
+
     setLoading(true);
 
     setTimeout(() => {
       const res = registerCarrier(formData);
       setLoading(false);
       if (res.success) {
-        navigate('/carrier/dashboard');
+        navigate('/register/thank-you');
       } else {
         setError(res.error || 'Registration failed');
       }
@@ -153,38 +190,61 @@ export default function CarrierRegister() {
           </div>
         </div>
 
-        <div className={styles.inputGroup}>
-          <label>Primary Equipment *</label>
-          <div className={styles.inputWrapper}>
-            <Truck size={16} className={styles.inputIcon} style={{ pointerEvents: 'none', zIndex: 5 }} />
-            <select 
-              name="equipment"
-              value={formData.equipment}
-              onChange={handleChange}
-              style={{
-                width: '100%',
-                padding: '14px 16px 14px 48px',
-                background: 'var(--bg-secondary)',
-                border: '1px solid var(--border)',
-                borderRadius: 'var(--radius-sm)',
-                color: 'var(--text-primary)',
-                fontFamily: 'var(--font)',
-                outline: 'none',
-                appearance: 'none',
-              }}
-            >
-              <option value="dry-van">Dry Van (53ft)</option>
-              <option value="flatbed">Flatbed / Stepdeck</option>
-              <option value="reefer">Reefer / Temp-Controlled</option>
-              <option value="box-truck">Box Truck (26ft)</option>
-              <option value="hotshot">Hotshot</option>
-            </select>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+          <div className={styles.inputGroup}>
+            <label>Carrier Type *</label>
+            <div className={styles.inputWrapper}>
+              <select 
+                name="carrierType"
+                value={formData.carrierType}
+                onChange={handleChange}
+                style={{
+                  width: '100%',
+                  padding: '14px 16px',
+                  background: 'var(--bg-secondary)',
+                  border: '1px solid var(--border)',
+                  borderRadius: 'var(--radius-sm)',
+                  color: 'var(--text-primary)',
+                  fontFamily: 'var(--font)',
+                  outline: 'none',
+                }}
+              >
+                <option value="solo">Owner-Operator / Solo (8% fee)</option>
+                <option value="fleet">Fleet Carrier (6% fee)</option>
+              </select>
+            </div>
+          </div>
+          <div className={styles.inputGroup}>
+            <label>Primary Equipment *</label>
+            <div className={styles.inputWrapper}>
+              <select 
+                name="equipment"
+                value={formData.equipment}
+                onChange={handleChange}
+                style={{
+                  width: '100%',
+                  padding: '14px 16px',
+                  background: 'var(--bg-secondary)',
+                  border: '1px solid var(--border)',
+                  borderRadius: 'var(--radius-sm)',
+                  color: 'var(--text-primary)',
+                  fontFamily: 'var(--font)',
+                  outline: 'none',
+                }}
+              >
+                <option value="dry-van">Dry Van (53ft)</option>
+                <option value="flatbed">Flatbed / Stepdeck</option>
+                <option value="reefer">Reefer / Temp-Controlled</option>
+                <option value="box-truck">Box Truck (26ft)</option>
+                <option value="hotshot">Hotshot</option>
+              </select>
+            </div>
           </div>
         </div>
 
         {/* Mock Upload Section */}
         <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <label style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text-secondary)' }}>Upload Documents (Required for activation)</label>
+          <label style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text-secondary)' }}>Upload Documents * (All required for activation)</label>
           
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
             <div 

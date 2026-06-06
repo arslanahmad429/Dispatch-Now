@@ -88,14 +88,8 @@ export default function Login() {
           <span>Quick Demo Access (Click to auto-fill)</span>
         </div>
         <div className={styles.demoChips}>
-          <button onClick={() => fillDemo('customer@dispatchnow.com')} className={styles.demoChip}>
-            <span>Shipper / Customer</span>
-          </button>
           <button onClick={() => fillDemo('carrier@dispatchnow.com')} className={styles.demoChip}>
             <span>Carrier / Driver</span>
-          </button>
-          <button onClick={() => fillDemo('dispatcher@dispatchnow.com')} className={styles.demoChip}>
-            <span>Dispatcher</span>
           </button>
           <button onClick={() => fillDemo('admin@dispatchnow.com')} className={styles.demoChip}>
             <span>Administrator</span>
@@ -104,12 +98,7 @@ export default function Login() {
       </div>
 
       <div className={styles.registerPrompt}>
-        <p>Don't have an account?</p>
-        <div className={styles.registerLinks}>
-          <Link to="/register/customer" className={styles.regLink}>Register as Customer</Link>
-          <span className={styles.divider}>•</span>
-          <Link to="/register/carrier" className={styles.regLink}>Register as Carrier</Link>
-        </div>
+        <p>Don't have an account? <Link to="/register/carrier" className={styles.regLink}>Register as Carrier / Driver</Link></p>
       </div>
     </div>
   );

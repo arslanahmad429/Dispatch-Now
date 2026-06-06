@@ -1,13 +1,14 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { getMockDb, addCarrier } from '../utils/mockDb';
 
 const AuthContext = createContext(null);
 
-// Demo users for frontend-only simulation
-const DEMO_USERS = {
-  'customer@dispatchnow.com':   { role: 'customer',   name: 'Alex Johnson',   password: 'demo123' },
-  'carrier@dispatchnow.com':    { role: 'carrier',    name: 'Marcus Williams', password: 'demo123' },
-  'admin@dispatchnow.com':      { role: 'admin',      name: 'Sarah Mitchell',  password: 'demo123' },
-  'dispatcher@dispatchnow.com': { role: 'dispatcher', name: 'Tom Richards',    password: 'demo123' },
+// Static administrator accounts
+const ADMIN_USER = {
+  email: 'admin@dispatchnow.com',
+  role: 'admin',
+  name: 'Sarah Mitchell',
+  password: 'demo123'
 };
 
 export function AuthProvider({ children }) {
@@ -19,29 +20,47 @@ export function AuthProvider({ children }) {
   });
 
   const login = (email, password) => {
-    const found = DEMO_USERS[email.toLowerCase()];
-    if (found && found.password === password) {
-      const userData = { email: email.toLowerCase(), role: found.role, name: found.name };
+    const emailLower = email.toLowerCase();
+    
+    // 1. Check Administrator credentials
+    if (emailLower === ADMIN_USER.email && password === ADMIN_USER.password) {
+      const userData = { email: ADMIN_USER.email, role: 'admin', name: ADMIN_USER.name };
       setUser(userData);
       localStorage.setItem('dn_user', JSON.stringify(userData));
-      return { success: true, role: found.role };
+      return { success: true, role: 'admin' };
     }
+
+    // 2. Check Carrier/Driver database
+    const db = getMockDb();
+    const carrier = db.carriers.find(c => c.email.toLowerCase() === emailLower);
+    
+    if (carrier) {
+      if (carrier.password !== password) {
+        return { success: false, error: 'Invalid email or password' };
+      }
+      
+      if (carrier.status !== 'approved') {
+        return { 
+          success: false, 
+          error: 'Your account is pending verification. Our team will contact you via WhatsApp.' 
+        };
+      }
+
+      const userData = { email: carrier.email, role: 'carrier', name: carrier.name };
+      setUser(userData);
+      localStorage.setItem('dn_user', JSON.stringify(userData));
+      return { success: true, role: 'carrier' };
+    }
+
     return { success: false, error: 'Invalid email or password' };
   };
 
-  const registerCustomer = (data) => {
-    // PLACEHOLDER — wire to backend later
-    const userData = { email: data.email, role: 'customer', name: data.firstName + ' ' + data.lastName };
-    setUser(userData);
-    localStorage.setItem('dn_user', JSON.stringify(userData));
-    return { success: true };
-  };
-
   const registerCarrier = (data) => {
-    // PLACEHOLDER — wire to backend later
-    const userData = { email: data.email, role: 'carrier', name: data.firstName + ' ' + data.lastName };
-    setUser(userData);
-    localStorage.setItem('dn_user', JSON.stringify(userData));
+    const res = addCarrier(data);
+    if (!res.success) {
+      return { success: false, error: res.error };
+    }
+    // We do NOT log them in automatically because they are pending approval
     return { success: true };
   };
 
@@ -51,7 +70,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, registerCustomer, registerCarrier }}>
+    <AuthContext.Provider value={{ user, login, logout, registerCarrier }}>
       {children}
     </AuthContext.Provider>
   );
@@ -63,10 +82,8 @@ export function useAuth() {
 
 export function getDashboardPath(role) {
   const map = {
-    customer: '/customer/dashboard',
     carrier: '/carrier/dashboard',
     admin: '/admin/dashboard',
-    dispatcher: '/dispatcher/dashboard',
   };
   return map[role] || '/login';
 }
