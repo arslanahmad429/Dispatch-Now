@@ -11,7 +11,6 @@ const INITIAL_CARRIERS = [
     truckNumber: "TRK-9821",
     licenseNumber: "DL-CA928103",
     equipment: "flatbed",
-    carrierType: "solo",
     status: "approved",
     joinedDate: "2026-06-01"
   },
@@ -27,7 +26,6 @@ const INITIAL_CARRIERS = [
     truckNumber: "TRK-7193",
     licenseNumber: "DL-IL719329",
     equipment: "dry-van",
-    carrierType: "fleet",
     status: "pending",
     joinedDate: "2026-06-03"
   },
@@ -43,7 +41,6 @@ const INITIAL_CARRIERS = [
     truckNumber: "TRK-3012",
     licenseNumber: "DL-TX301284",
     equipment: "reefer",
-    carrierType: "solo",
     status: "approved",
     joinedDate: "2026-06-04"
   }
@@ -91,8 +88,8 @@ const INITIAL_ORDERS = [
     commodity: "General Merchandise",
     eta: "2026-06-08 18:30",
     paymentStatus: "unpaid",
-    dispatchFee: 372, // 6% of 6200 (fleet)
-    driverPayout: 5828,
+    dispatchFee: 496, // 8% of 6200
+    driverPayout: 5704,
     history: [
       { status: "pending", time: "2026-06-02 08:00", note: "Order placed manually by admin" },
       { status: "dispatched", time: "2026-06-02 12:00", note: "Carrier John Doe accepted the dispatch" },
@@ -162,8 +159,21 @@ export function addCarrier(carrierData) {
   const db = getMockDb();
   const emailLower = carrierData.email.toLowerCase();
   
+  // 1. Validate Email Uniqueness
   if (db.carriers.some(c => c.email.toLowerCase() === emailLower)) {
-    return { success: false, error: "Email already registered" };
+    return { success: false, error: "Email address is already registered." };
+  }
+
+  // 2. Validate Truck Plate Uniqueness
+  const cleanTruck = carrierData.truckNumber.trim().toUpperCase();
+  if (db.carriers.some(c => c.truckNumber.toUpperCase() === cleanTruck)) {
+    return { success: false, error: `Truck plate number "${cleanTruck}" is already registered by another driver.` };
+  }
+
+  // 3. Validate MC Freight Authority Registration Uniqueness
+  const cleanMc = carrierData.mcNumber.startsWith("MC-") ? carrierData.mcNumber : `MC-${carrierData.mcNumber}`;
+  if (db.carriers.some(c => c.mcNumber.toUpperCase() === cleanMc.toUpperCase())) {
+    return { success: false, error: `Freight Authority MC number "${cleanMc}" is already registered.` };
   }
 
   const newCarrier = {
@@ -173,12 +183,11 @@ export function addCarrier(carrierData) {
     name: `${carrierData.firstName} ${carrierData.lastName}`,
     email: emailLower,
     phone: carrierData.phone,
-    mcNumber: carrierData.mcNumber.startsWith("MC-") ? carrierData.mcNumber : `MC-${carrierData.mcNumber}`,
+    mcNumber: cleanMc,
     dotNumber: carrierData.dotNumber ? (carrierData.dotNumber.startsWith("DOT-") ? carrierData.dotNumber : `DOT-${carrierData.dotNumber}`) : "N/A",
-    truckNumber: carrierData.truckNumber || "N/A",
-    licenseNumber: carrierData.licenseNumber || "N/A",
+    truckNumber: cleanTruck,
+    licenseNumber: carrierData.licenseNumber,
     equipment: carrierData.equipment,
-    carrierType: carrierData.carrierType || "solo",
     password: carrierData.password, // Storing password for universal mock login
     status: "pending", // Default to pending until approved by admin
     joinedDate: new Date().toISOString().substring(0, 10)
@@ -204,11 +213,9 @@ export function updateCarrierStatus(mcNumber, status) {
 export function addOrder(orderData) {
   const db = getMockDb();
   
-  // Find carrier to calculate service charge
   const carrier = db.carriers.find(c => c.email.toLowerCase() === orderData.carrierEmail.toLowerCase());
-  const carrierType = carrier ? carrier.carrierType : "solo";
   const rate = Number(orderData.rate);
-  const feePercent = carrierType === "fleet" ? 0.06 : 0.08;
+  const feePercent = 0.08; // Flat 8% dispatch fee for all drivers
   const dispatchFee = Math.round(rate * feePercent);
   const driverPayout = rate - dispatchFee;
 

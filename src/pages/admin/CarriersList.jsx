@@ -85,19 +85,7 @@ export default function CarriersList() {
     { key: 'equipment', label: 'Trailer Profile', render: (val) => (
       <span style={{ textTransform: 'capitalize' }}>{val.replace('-', ' ')}</span>
     )},
-    { key: 'carrierType', label: 'Carrier Scale', sortable: true, render: (val) => (
-      <span style={{ 
-        fontSize: '0.8rem', 
-        fontWeight: 'bold', 
-        padding: '2px 8px', 
-        borderRadius: '12px', 
-        background: val === 'fleet' ? 'rgba(59, 130, 246, 0.1)' : 'rgba(139, 92, 246, 0.1)',
-        color: val === 'fleet' ? '#3b82f6' : '#8b5cf6',
-        textTransform: 'uppercase'
-      }}>
-        {val === 'fleet' ? 'Fleet' : 'Solo'}
-      </span>
-    )},
+
     { key: 'status', label: 'Compliance', render: (val) => <StatusBadge status={val} /> },
     { key: 'actions', label: 'Actions', render: (_, row) => (
       <button 
