@@ -39,8 +39,8 @@ export default function Login() {
 
   return (
     <div className={styles.loginWrapper}>
-      <h2>Sign In to Platform</h2>
-      <p className={styles.subtitle}>Enter your credentials or select a demo role below to explore our multi-portal logistics system.</p>
+      <h2>Log In to Platform</h2>
+      <p className={styles.subtitle}>Enter your credentials or select a demo role below to explore the platform.</p>
 
       {error && <div className={styles.errorAlert}>{error}</div>}
 
@@ -77,7 +77,7 @@ export default function Login() {
         </div>
 
         <button type="submit" className="btn-primary" style={{ width: '100%', justifyContent: 'center' }} disabled={loading}>
-          {loading ? 'Authenticating...' : 'Sign In'} <ArrowRight size={16} />
+          {loading ? 'Authenticating...' : 'Log In'} <ArrowRight size={16} />
         </button>
       </form>
 
@@ -89,7 +89,7 @@ export default function Login() {
         </div>
         <div className={styles.demoChips}>
           <button onClick={() => fillDemo('carrier@dispatchnow.com')} className={styles.demoChip}>
-            <span>Carrier / Driver</span>
+            <span>Driver / Carrier</span>
           </button>
           <button onClick={() => fillDemo('admin@dispatchnow.com')} className={styles.demoChip}>
             <span>Administrator</span>
@@ -98,7 +98,7 @@ export default function Login() {
       </div>
 
       <div className={styles.registerPrompt}>
-        <p>Don't have an account? <Link to="/register/carrier" className={styles.regLink}>Register as Carrier / Driver</Link></p>
+        <p>Don't have an account? <Link to="/register/carrier" className={styles.regLink}>Register as Driver</Link></p>
       </div>
     </div>
   );

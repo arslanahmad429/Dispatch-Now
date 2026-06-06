@@ -105,8 +105,8 @@ export default function CarrierRegister() {
 
   return (
     <div className={styles.loginWrapper} style={{ maxWidth: '600px' }}>
-      <h2>Carrier Registration</h2>
-      <p className={styles.subtitle}>Sign up with your vehicle credentials to start receiving manual freight dispatches.</p>
+      <h2>Register as Driver</h2>
+      <p className={styles.subtitle}>Register with your vehicle credentials to start receiving manual freight dispatches.</p>
 
       {error && <div className={styles.errorAlert}>{error}</div>}
 
@@ -369,7 +369,7 @@ export default function CarrierRegister() {
       </form>
 
       <div className={styles.registerPrompt}>
-        <p>Already have an account? <Link to="/login" className={styles.regLink}>Sign In</Link></p>
+        <p>Already have an account? <Link to="/login" className={styles.regLink}>Log In</Link></p>
       </div>
     </div>
   );

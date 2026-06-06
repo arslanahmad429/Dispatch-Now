@@ -8,7 +8,7 @@ const steps = [
   {
     number: '01',
     icon: <UserPlus size={32} />,
-    title: 'Sign Up & Send Documents',
+    title: 'Register as Driver & Send Documents',
     description:
       'Fill out our quick online form with your MC number, equipment type, and preferred lanes. Upload your Motor Carrier authority, W-9, insurance certificate, and sign our dispatcher agreement. Setup takes less than 24 hours.',
     details: ['MC Authority & DOT Number', 'Certificate of Insurance', 'W-9 Form', 'Dispatcher Agreement & POA'],
@@ -97,7 +97,7 @@ export default function HowItWorks() {
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.8 }}
         >
-          <p>Ready to get started? It takes less than 5 minutes to sign up.</p>
+          <p>Ready to get started? It takes less than 5 minutes to register as driver.</p>
           <Link
             to="/register/carrier"
             className="btn-primary"

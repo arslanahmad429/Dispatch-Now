@@ -46,15 +46,16 @@ export default function BlogPage() {
               </Link>
             </div>
             <div className={styles.featuredContent}>
-              <div className={styles.metaRow}>
-                <span className={styles.metaItem}><User size={14} /> {featuredPost.author}</span>
-                <span className={styles.metaItem}><Calendar size={14} /> {featuredPost.date}</span>
-                <span className={styles.metaItem}><Clock size={14} /> {featuredPost.readTime}</span>
-              </div>
+              <div className={styles.featuredCategory}>{featuredPost.category || 'Insights'}</div>
               <Link to={`/blog/${featuredPost.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <h2 className={styles.featuredTitle}>{featuredPost.title}</h2>
               </Link>
               <p className={styles.featuredSummary}>{featuredPost.summary}</p>
+              <div className={styles.metaRow} style={{ marginTop: 'auto', marginBottom: '20px' }}>
+                <span className={styles.metaItem}><User size={14} /> {featuredPost.author}</span>
+                <span className={styles.metaItem}><Calendar size={14} /> {featuredPost.date}</span>
+                <span className={styles.metaItem}><Clock size={14} /> {featuredPost.readTime}</span>
+              </div>
               <Link to={`/blog/${featuredPost.id}`} className={styles.readFeaturedBtn}>
                 Read Full Article <ArrowRight size={16} />
               </Link>
@@ -75,6 +76,7 @@ export default function BlogPage() {
               <Link to={`/blog/${post.id}`} className={styles.blogCard} style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column' }}>
                 <div className={styles.cardImageWrapper}>
                   <img src={post.image} alt={post.title} className={styles.cardImage} />
+                  <div className={styles.cardCategory}>{post.category || 'Insights'}</div>
                   
                   {/* Transparent overlay visible on hover */}
                   <div className={styles.cardOverlay}>

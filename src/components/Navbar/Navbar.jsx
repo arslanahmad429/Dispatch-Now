@@ -87,12 +87,12 @@ export default function Navbar() {
               </Link>
             ) : (
               <Link to="/login" className={styles.loginLink}>
-                Login
+                Log In
               </Link>
             )}
 
-            <Link to="/contact" className="btn-primary">
-              Get Started <ArrowRight size={16} />
+            <Link to="/register/carrier" className="btn-primary">
+              Register as Driver <ArrowRight size={16} />
             </Link>
           </div>
 
@@ -153,18 +153,18 @@ export default function Navbar() {
                   transition={{ delay: 0.1 + navLinks.length * 0.05 }}
                 >
                   <Link to="/login" onClick={() => setMobileOpen(false)}>
-                    Login
+                    Log In
                   </Link>
                 </motion.div>
               )}
             </nav>
             <div className={styles.mobileMenuFooter}>
               <Link
-                to="/contact"
+                to="/register/carrier"
                 className="btn-primary"
                 onClick={() => setMobileOpen(false)}
               >
-                Start Dispatching <ArrowRight size={16} />
+                Register as Driver <ArrowRight size={16} />
               </Link>
               <a href="tel:+1-800-DISPATCH" className={styles.navbarPhone}>
                 <Phone size={15} />

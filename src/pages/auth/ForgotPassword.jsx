@@ -23,7 +23,7 @@ export default function ForgotPassword() {
           </div>
           <h3>Check your email</h3>
           <p className={styles.subtitle} style={{ marginTop: '8px' }}>We have sent a password reset link to <strong>{email}</strong>.</p>
-          <Link to="/login" className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '20px' }}>Back to Sign In</Link>
+          <Link to="/login" className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '20px' }}>Back to Log In</Link>
         </div>
       ) : (
         <>
@@ -47,7 +47,7 @@ export default function ForgotPassword() {
             </button>
           </form>
           <div className={styles.registerPrompt}>
-            <p><Link to="/login" className={styles.regLink}>Back to Sign In</Link></p>
+            <p><Link to="/login" className={styles.regLink}>Back to Log In</Link></p>
           </div>
         </>
       )}

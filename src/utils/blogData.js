@@ -3,6 +3,7 @@ export const BLOG_POSTS = [
     id: "mastering-the-lanes",
     title: "Mastering the Lanes: 5 High-Paying Freight Routes for Owner-Operators in 2026",
     summary: "Identify the most lucrative freight lanes across the United States. Learn how seasonal shifts, port congestion, and regional manufacturing demands shape carrier payouts.",
+    category: "Freight Markets",
     content: `
 ## Why Route Selection Defines Your Profitability
 
@@ -53,6 +54,7 @@ Here are the top 5 high-paying freight routes in 2026 and why they command premi
     id: "maximize-truck-earnings",
     title: "How Dispatch Services Maximize Truck Earnings: Our Flat 8% Model",
     summary: "Discover how professional manual dispatching helps carriers cut deadhead miles, negotiate broker listings, and manage payments with a flat 8% payout structure.",
+    category: "Carrier Earnings",
     content: `
 ## The Reality of Empty Miles (Deadhead)
 
@@ -91,6 +93,7 @@ To maintain safety compliance integrity and prevent fraudulent registrations, ev
     id: "navigating-usdot-compliance",
     title: "Navigating USDOT and MC Compliance for New Carrier Authority",
     summary: "A step-by-step checklist to keeping your operating authority active. Learn about insurance filings, drug testing consortiums, and safety audit preparation.",
+    category: "Safety Compliance",
     content: `
 ## Getting Your Authority is Only Step One
 
@@ -128,6 +131,7 @@ Every new carrier is subject to a safety audit within their first 12 months. Aud
     id: "manual-dispatching-secrets",
     title: "Manual Dispatching Secrets: How Shippers and Carriers Negotiate",
     summary: "Go behind the scenes of load boards. Learn how dispatchers leverage backhauls, equipment shortages, and diesel prices to secure high-paying runs.",
+    category: "Rate Negotiations",
     content: `
 ## Inside the Rate Negotiation Room
 
@@ -152,6 +156,7 @@ If a shipper needs a Reefer during produce season or a Flatbed in the spring con
     id: "broker-relationships-guide",
     title: "Building Long-Term Broker Partnerships: Accessing Off-Market Freight",
     summary: "Learn how professional dispatchers negotiate with premier logistics networks to secure dedicated freight lines, avoiding the spot market race.",
+    category: "Broker Networks",
     content: `
 ## The Advantage of Direct Broker Networks
 
@@ -178,6 +183,7 @@ A high rate doesn't mean anything if the broker goes bankrupt before paying. Our
     id: "fuel-and-route-optimization",
     title: "Optimizing Route Efficiency and Fuel Costs: A Carrier's Guide",
     summary: "Discover how smart route planning, regional freight hubs, and pre-planned backhauls keep drivers moving profitably in a volatile market.",
+    category: "Route Planning",
     content: `
 ## Driving Smarter, Not Harder
 
@@ -186,7 +192,7 @@ In transportation logistics, fuel is your largest operating expense. Running emp
 ### The Strategy Behind Route Planning
 
 1. **Triangulation and Lane Loops:** Instead of booking a simple out-and-back load, our dispatchers map triangular route loops. For example, rather than returning empty from a low-volume delivery point, we dispatch you to a nearby high-volume hub first, maximizing your revenue per mile for the entire trip.
-2. **Toll and Terrain Auditing:** We plan routes around high-cost toll areas and mountain passes when load weight and fuel consumption make state highways more profitable.
+2. **Toll and Terrain Auditing:** We plan routes around high-cost toll areas and mountain passes when load weight and fuel consumption make state highways more profitably.
 3. **Pre-Planners and Reloads:** We start sourcing your reload 24 hours before your active load is delivered. You sign the rate confirmation for your next load before unloading, ensuring zero downtime.
     `,
     image: "/media/highway_truck.png",
