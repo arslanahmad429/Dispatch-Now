@@ -19,7 +19,7 @@ const equipment = [
       'Year-round demand, no seasonal dips',
       'Best for new owner-operators starting out',
     ],
-    color: '#FFD700',
+    color: '#0f5bbf',
     laneExample: 'Chicago → Los Angeles | $3.20/mi | 2,016 miles',
   },
   {

@@ -548,3 +548,19 @@
     grid-template-columns: 1fr;
   }
 }
+
+.bulletGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-top: 20px;
+  margin-bottom: 25px;
+}
+
+@media (max-width: 600px) {
+  .bulletGrid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+

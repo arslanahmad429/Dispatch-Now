@@ -6,7 +6,7 @@
 .bg {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at center, rgba(255,215,0,0.04) 0%, transparent 70%);
+  background: radial-gradient(ellipse at center, rgba(15, 91, 191, 0.04) 0%, transparent 70%);
 }
 
 .header {
@@ -83,13 +83,13 @@
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #FFD700, #FFA500);
+  background: linear-gradient(135deg, var(--accent), #60a5fa);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 16px;
   font-weight: 800;
-  color: #000;
+  color: #fff;
   flex-shrink: 0;
 }
 
@@ -129,7 +129,7 @@
 
 .btn:hover {
   background: var(--accent);
-  color: #000;
+  color: #fff;
   border-color: var(--accent);
 }
 

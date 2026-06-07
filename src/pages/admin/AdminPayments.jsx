@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { getMockDb, updatePaymentStatus } from '../../utils/mockDb';
 import DataTable from '../../components/shared/DataTable';
 import StatusBadge from '../../components/shared/StatusBadge';
-import { Check, Clock, ShieldAlert, DollarSign } from 'lucide-react';
+import { Check, Clock, ShieldAlert, DollarSign, Truck } from 'lucide-react';
 import styles from './AdminPayments.module.css';
 
 export default function AdminPayments() {
@@ -27,7 +27,24 @@ export default function AdminPayments() {
   const columns = [
     { key: 'id', label: 'Billing INV', sortable: true, render: (val) => val ? (val.includes('-') ? `INV-${val.split('-')[1]}` : `INV-${val.substring(0, 6)}`) : 'INV-N/A' },
     { key: 'customer', label: 'Shipper' },
-    { key: 'carrier', label: 'Assigned Driver', render: (val) => val || "None" },
+    { key: 'carrier', label: 'Assigned Driver', render: (val, row) => {
+      let displayName = val;
+      if (!displayName && row.carrierEmail) {
+        const db = getMockDb();
+        const c = db.carriers.find(item => item.email.toLowerCase() === row.carrierEmail.toLowerCase());
+        if (c) {
+          displayName = c.name || `${c.firstName || ''} ${c.lastName || ''}`.trim();
+        }
+      }
+      return (
+        <div>
+          <div style={{ fontWeight: '600' }}>{displayName || "None"}</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
+            <Truck size={10} /> Truck: {row.truckNumber || "N/A"}
+          </div>
+        </div>
+      );
+    }},
     { key: 'rate', label: 'Gross Freight', sortable: true, render: (val) => `$${(val || 0).toLocaleString()}` },
     { key: 'dispatchFee', label: 'Dispatch Cut', render: (val, row) => `-$${(val !== undefined ? val : Math.round((row.rate || 0) * 0.08)).toLocaleString()}` },
     { key: 'driverPayout', label: 'Driver Payout', render: (val, row) => (

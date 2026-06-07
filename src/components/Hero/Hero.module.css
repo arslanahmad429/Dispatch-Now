@@ -43,13 +43,13 @@
     );
 }
 
-/* Gold accent vignette on edges */
+/* Blue accent vignette on edges */
 .videoVignette {
   position: absolute;
   inset: 0;
   z-index: 2;
   background:
-    radial-gradient(ellipse at 50% 0%, rgba(255, 215, 0, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 0%, rgba(59, 130, 246, 0.06) 0%, transparent 60%),
     radial-gradient(ellipse at 0% 50%, rgba(0, 0, 0, 0.5) 0%, transparent 50%),
     radial-gradient(ellipse at 100% 50%, rgba(0, 0, 0, 0.5) 0%, transparent 50%);
 }
@@ -69,12 +69,12 @@
   pointer-events: none;
 }
 
-/* ---- MAIN CONTENT ---- */
 .heroContent {
   position: relative;
   z-index: 10;
   width: 100%;
-  padding-top: 80px;
+  padding-top: 100px;
+  padding-bottom: 140px; /* Leave space for bottom statsBar */
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -94,8 +94,8 @@
   align-items: center;
   gap: 10px;
   padding: 8px 18px;
-  background: rgba(255, 215, 0, 0.1);
-  border: 1px solid rgba(255, 215, 0, 0.3);
+  background: var(--accent-dim);
+  border: 1px solid var(--border-accent);
   border-radius: 9999px;
   font-size: 13px;
   font-weight: 600;
@@ -112,6 +112,15 @@
   background: var(--accent);
   box-shadow: 0 0 8px var(--accent);
   animation: pulse 2s ease-in-out infinite;
+}
+
+.badgeDotOuter {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  position: absolute;
+  animation: pulseOuter 2s ease-in-out infinite;
 }
 
 @keyframes pulse {
@@ -135,7 +144,7 @@
 
 .heroTitle .accentLine {
   display: block;
-  background: linear-gradient(90deg, #FFD700 0%, #FFA500 60%, #FFD700 100%);
+  background: linear-gradient(90deg, #3b82f6 0%, #0f5bbf 60%, #3b82f6 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

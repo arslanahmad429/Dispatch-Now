@@ -15,7 +15,7 @@ export default function MyOrders() {
     const db = getMockDb();
     // Filter orders matching logged-in carrier email
     const myOrders = db.orders.filter(
-      o => o.carrierEmail.toLowerCase() === user.email.toLowerCase()
+      o => o.carrierEmail && user.email && o.carrierEmail.toLowerCase() === user.email.toLowerCase()
     );
     setOrders(myOrders);
   }, [user]);
@@ -33,7 +33,7 @@ export default function MyOrders() {
     { key: 'rate', label: 'Gross Rate', render: (val) => `$${(val || 0).toLocaleString()}` },
     { key: 'dispatchFee', label: 'Company Fee', render: (val, row) => `-$${(val !== undefined ? val : Math.round(row.rate * 0.08)).toLocaleString()}` },
     { key: 'driverPayout', label: 'My Net Payout', render: (val, row) => (
-      <span className={styles.payout} style={{ color: 'var(--accent-gold)' }}>
+      <span className={styles.payout} style={{ color: 'var(--accent)', fontWeight: '700' }}>
         ${(val !== undefined ? val : (row.rate - Math.round(row.rate * 0.08))).toLocaleString()}
       </span>
     )},

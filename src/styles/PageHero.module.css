@@ -1,0 +1,89 @@
+/* ============================================
+   SHARED PAGE HERO BANNER — used across all public pages
+   ============================================ */
+
+.pageHero {
+  position: relative;
+  min-height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 100px 0 60px;
+  margin-bottom: 0;
+}
+
+.pageHeroBg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.pageHeroBg img,
+.pageHeroBg video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.32) saturate(0.9);
+}
+
+.pageHeroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(3, 12, 35, 0.70) 0%,
+    rgba(15, 91, 191, 0.30) 100%
+  );
+  z-index: 1;
+}
+
+.pageHeroContent {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 0 24px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.pageHeroLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #60a5fa;
+  margin-bottom: 18px;
+}
+
+.pageHeroLabel::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: #60a5fa;
+}
+
+.pageHeroTitle {
+  font-size: clamp(34px, 5vw, 58px);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  color: #ffffff;
+  margin-bottom: 18px;
+}
+
+.pageHeroTitle span {
+  color: var(--accent);
+}
+
+.pageHeroSub {
+  font-size: 17px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.72);
+  max-width: 600px;
+  margin: 0 auto;
+}

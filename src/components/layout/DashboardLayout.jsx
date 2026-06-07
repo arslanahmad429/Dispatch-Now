@@ -21,6 +21,7 @@ const ROLE_NAVIGATION = {
     { label: 'All Orders', path: '/admin/orders', icon: ClipboardList },
     { label: 'Carriers', path: '/admin/carriers', icon: Truck },
     { label: 'Payments', path: '/admin/payments', icon: CreditCard },
+    { label: 'Change Credentials', path: '/admin/settings', icon: User },
   ],
 };
 
@@ -47,11 +48,8 @@ export default function DashboardLayout() {
       {/* Sidebar */}
       <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ''}`}>
         <div className={styles.sidebarHeader}>
-          <Link to="/" className={styles.logo}>
-            <div className={styles.logoIcon}>
-              <Truck size={18} strokeWidth={2.5} />
-            </div>
-            DISPATCH<span className={styles.logoDot}>NOW</span>
+          <Link to="/" className={styles.logoLink}>
+            <img src="/media/logo.png" alt="Dispatch Now" className={styles.logoImg} />
           </Link>
           <button className={styles.closeSidebar} onClick={() => setSidebarOpen(false)}>
             <X size={20} />
@@ -87,10 +85,10 @@ export default function DashboardLayout() {
         <div className={styles.sidebarFooter}>
           <div className={styles.userInfo}>
             <div className={styles.userAvatar}>
-              {user.name.charAt(0)}
+              {(user.name || 'D').charAt(0)}
             </div>
             <div className={styles.userDetails}>
-              <p className={styles.userName}>{user.name}</p>
+              <p className={styles.userName}>{user.name || 'Driver'}</p>
               <p className={styles.userEmail}>{user.email}</p>
             </div>
           </div>
@@ -122,9 +120,9 @@ export default function DashboardLayout() {
               </button>
             </div>
             <div className={styles.profileIndicator}>
-              <span>Welcome, <strong>{user.name.split(' ')[0]}</strong></span>
+              <span>Welcome, <strong>{(user.name || 'Driver').split(' ')[0]}</strong></span>
               <div className={styles.avatar}>
-                {user.name.charAt(0)}
+                {(user.name || 'D').charAt(0)}
               </div>
             </div>
           </div>

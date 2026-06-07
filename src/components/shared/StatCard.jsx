@@ -1,6 +1,6 @@
 import styles from './StatCard.module.css';
 
-export default function StatCard({ icon, label, value, change, changeType = 'up', color = '#FFD700' }) {
+export default function StatCard({ icon, label, value, change, changeType = 'up', color = '#0f5bbf' }) {
   return (
     <div className={styles.card} style={{ '--card-color': color }}>
       <div className={styles.top}>

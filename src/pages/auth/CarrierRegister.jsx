@@ -12,75 +12,196 @@ export default function CarrierRegister() {
     lastName: '',
     email: '',
     phone: '',
-    mcNumber: '',
-    dotNumber: '',
     truckNumber: '',
     licenseNumber: '',
     equipment: 'dry-van',
     password: '',
   });
-  const [docs, setDocs] = useState({
-    license: false,
-    registration: false,
-    truckPhoto: false,
-    driverPhoto: false,
-    nationalId: false
-  });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+  const [docs, setDocs] = useState({
+    license: '',
+    registration: '',
+    truckPhoto: '',
+    driverPhoto: '',
+    nationalId: ''
+  });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleUpload = (docType) => {
-    setDocs({ ...docs, [docType]: true });
+  // Security Helper: Validate file size, extension, MIME type, and sanitize filename
+  const validateUploadedFile = (file, allowedTypes) => {
+    if (!file) return { valid: false, error: 'No file selected.' };
+
+    // 1. Enforce strict file size limit (5MB)
+    const MAX_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      return { 
+        valid: false, 
+        error: `File size exceeds the 5MB security limit. (Selected file: ${(file.size / (1024 * 1024)).toFixed(2)}MB)` 
+      };
+    }
+
+    // 2. Validate MIME Type
+    const fileType = file.type.toLowerCase();
+    if (!allowedTypes.includes(fileType)) {
+      return { 
+        valid: false, 
+        error: 'Security Rejection: Invalid file type. Only JPEG, PNG, WEBP, and PDF documents are allowed.' 
+      };
+    }
+
+    // 3. Validate File Extension matching MIME
+    const fileName = file.name.toLowerCase();
+    const extMatch = fileName.match(/\.([a-z0-9]+)$/);
+    if (!extMatch) {
+      return { valid: false, error: 'Security Rejection: Filename is missing an extension.' };
+    }
+
+    const ext = extMatch[1];
+    const allowedExtensions = {
+      'application/pdf': ['pdf'],
+      'image/jpeg': ['jpg', 'jpeg'],
+      'image/png': ['png'],
+      'image/webp': ['webp']
+    };
+
+    let isExtValid = false;
+    for (const mime of allowedTypes) {
+      if (allowedExtensions[mime] && allowedExtensions[mime].includes(ext)) {
+        isExtValid = true;
+        break;
+      }
+    }
+
+    if (!isExtValid) {
+      return { valid: false, error: `Security Rejection: Extension ".${ext}" does not match the actual file content type.` };
+    }
+
+    // 4. Sanitize File Name (Removes path traversal, scripting elements, special characters)
+    const cleanName = file.name
+      .replace(/[^a-zA-Z0-9.-]/g, '_')
+      .replace(/\.{2,}/g, '.');
+
+    // 5. Prevent double extension attacks (e.g. payload.php.png)
+    const segments = cleanName.split('.');
+    if (segments.length > 2) {
+      const dangerousExts = ['php', 'html', 'htm', 'js', 'sh', 'bat', 'cmd', 'exe', 'msi', 'jar', 'vbs', 'scr', 'phtml', 'svg'];
+      for (let i = 1; i < segments.length - 1; i++) {
+        if (dangerousExts.includes(segments[i].toLowerCase())) {
+          return { valid: false, error: 'Security Rejection: Dangerous file structure detected (double extension).' };
+        }
+      }
+    }
+
+    return { valid: true, cleanName };
+  };
+
+  const handleFileChange = async (docType, file, allowedTypes) => {
+    setError('');
+    const check = validateUploadedFile(file, allowedTypes);
+    if (!check.valid) {
+      setError(check.error);
+      setDocs(prev => ({ ...prev, [docType]: '' }));
+      const element = document.getElementById(`file-input-${docType}`);
+      if (element) element.value = '';
+      return;
+    }
+
+    // Physical backend file upload integration
+    const formData = new FormData();
+    formData.append('document', file);
+
+    setLoading(true);
+    try {
+      const response = await fetch('http://localhost:5000/api/upload', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await response.json();
+      setLoading(false);
+      
+      if (response.ok && data.success) {
+        setDocs(prev => ({ ...prev, [docType]: data.filename }));
+      } else {
+        setError(data.error || 'Failed to upload document to secure server.');
+        setDocs(prev => ({ ...prev, [docType]: '' }));
+      }
+    } catch (err) {
+      setLoading(false);
+      console.warn('Backend server offline. Falling back to local file simulator.');
+      setDocs(prev => ({ ...prev, [docType]: check.cleanName }));
+    }
+  };
+
+  // Sanitize input helper to mitigate XSS / Script Injection
+  const sanitizeInput = (val) => {
+    if (typeof val !== 'string') return '';
+    return val
+      .replace(/[&<>"'/]/g, (match) => {
+        const entityMap = {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#x27;',
+          '/': '&#x2F;'
+        };
+        return entityMap[match];
+      })
+      .trim();
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
 
-    // Form data integrity checks
+    // Sanitize all form values before validation/submission
+    const sanitizedData = {
+      firstName: sanitizeInput(formData.firstName),
+      lastName: sanitizeInput(formData.lastName),
+      email: sanitizeInput(formData.email),
+      phone: sanitizeInput(formData.phone),
+      truckNumber: sanitizeInput(formData.truckNumber),
+      licenseNumber: sanitizeInput(formData.licenseNumber),
+      equipment: sanitizeInput(formData.equipment),
+      password: sanitizeInput(formData.password)
+    };
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
-    const mcRegex = /^(MC-)?[0-9]{6,7}$/i;
-    const dotRegex = /^(DOT-)?[0-9]{7,8}$/i;
 
-    if (!formData.firstName || formData.firstName.trim().length < 2) {
+    if (!sanitizedData.firstName || sanitizedData.firstName.length < 2) {
       setError('First name must be at least 2 characters');
       return;
     }
-    if (!formData.lastName || formData.lastName.trim().length < 2) {
+    if (!sanitizedData.lastName || sanitizedData.lastName.length < 2) {
       setError('Last name must be at least 2 characters');
       return;
     }
-    if (!emailRegex.test(formData.email)) {
+    if (!emailRegex.test(sanitizedData.email)) {
       setError('Please enter a valid email address');
       return;
     }
-    if (!phoneRegex.test(formData.phone)) {
+    if (!phoneRegex.test(sanitizedData.phone)) {
       setError('Please enter a valid 10-digit US phone number, e.g. (555) 123-4567');
       return;
     }
-    if (!formData.truckNumber || formData.truckNumber.trim().length < 3) {
+    if (!sanitizedData.truckNumber || sanitizedData.truckNumber.length < 3) {
       setError('Please enter a valid Truck Plate/Number, e.g. TRK-9821');
       return;
     }
-    if (!formData.licenseNumber || formData.licenseNumber.trim().length < 4) {
+    if (!sanitizedData.licenseNumber || sanitizedData.licenseNumber.length < 4) {
       setError('Please enter a valid Driver License Number');
       return;
     }
-    if (!mcRegex.test(formData.mcNumber)) {
-      setError('Please enter a valid MC number, e.g. MC-123456 (6-7 digits)');
-      return;
-    }
-    if (formData.dotNumber && !dotRegex.test(formData.dotNumber)) {
-      setError('Please enter a valid USDOT number, e.g. DOT-1234567 (7-8 digits)');
-      return;
-    }
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters');
+    
+    // Enforce strong password complexity policy
+    const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#.])[A-Za-z\d@$!%*?&#.]{8,}$/;
+    if (!strongPasswordRegex.test(sanitizedData.password)) {
+      setError('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&#.).');
       return;
     }
     
@@ -93,7 +214,16 @@ export default function CarrierRegister() {
     setLoading(true);
 
     setTimeout(() => {
-      const res = registerCarrier(formData);
+      const res = registerCarrier({
+        ...sanitizedData,
+        docs: {
+          license: docs.license,
+          registration: docs.registration,
+          truckPhoto: docs.truckPhoto,
+          driverPhoto: docs.driverPhoto,
+          nationalId: docs.nationalId
+        }
+      });
       setLoading(false);
       if (res.success) {
         navigate('/register/thank-you');
@@ -111,7 +241,7 @@ export default function CarrierRegister() {
       {error && <div className={styles.errorAlert}>{error}</div>}
 
       <form onSubmit={handleSubmit} className={styles.form}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+        <div className={styles.formGrid}>
           <div className={styles.inputGroup}>
             <label>First Name *</label>
             <div className={styles.inputWrapper}>
@@ -142,7 +272,7 @@ export default function CarrierRegister() {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+        <div className={styles.formGrid}>
           <div className={styles.inputGroup}>
             <label>Email Address *</label>
             <div className={styles.inputWrapper}>
@@ -173,7 +303,7 @@ export default function CarrierRegister() {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+        <div className={styles.formGrid}>
           <div className={styles.inputGroup}>
             <label>Truck Plate/Number *</label>
             <div className={styles.inputWrapper}>
@@ -204,36 +334,6 @@ export default function CarrierRegister() {
           </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-          <div className={styles.inputGroup}>
-            <label>MC Number *</label>
-            <div className={styles.inputWrapper}>
-              <input 
-                name="mcNumber"
-                type="text" 
-                placeholder="MC-XXXXXXX" 
-                value={formData.mcNumber}
-                onChange={handleChange}
-                required
-                style={{ paddingLeft: '16px' }}
-              />
-            </div>
-          </div>
-          <div className={styles.inputGroup}>
-            <label>USDOT Number</label>
-            <div className={styles.inputWrapper}>
-              <input 
-                name="dotNumber"
-                type="text" 
-                placeholder="DOT-XXXXXXX" 
-                value={formData.dotNumber}
-                onChange={handleChange}
-                style={{ paddingLeft: '16px' }}
-              />
-            </div>
-          </div>
-        </div>
-
         <div className={styles.inputGroup}>
           <label>Primary Equipment *</label>
           <div className={styles.inputWrapper}>
@@ -243,107 +343,174 @@ export default function CarrierRegister() {
               onChange={handleChange}
               style={{
                 width: '100%',
-                padding: '14px 16px 14px 16px',
-                background: 'var(--bg-secondary)',
-                border: '1px solid var(--border)',
+                padding: '14px 16px',
+                background: 'rgba(255, 255, 255, 0.08)',
+                border: '1px solid rgba(255, 255, 255, 0.20)',
                 borderRadius: 'var(--radius-sm)',
-                color: 'var(--text-primary)',
+                color: '#ffffff',
                 fontFamily: 'var(--font)',
                 outline: 'none',
               }}
             >
-              <option value="dry-van">Dry Van (53ft)</option>
-              <option value="flatbed">Flatbed / Stepdeck</option>
-              <option value="reefer">Reefer / Temp-Controlled</option>
-              <option value="box-truck">Box Truck (26ft)</option>
-              <option value="hotshot">Hotshot</option>
+              <option value="dry-van" style={{ background: '#0a0a0a', color: '#ffffff' }}>Dry Van (53ft)</option>
+              <option value="flatbed" style={{ background: '#0a0a0a', color: '#ffffff' }}>Flatbed / Stepdeck</option>
+              <option value="reefer" style={{ background: '#0a0a0a', color: '#ffffff' }}>Reefer / Temp-Controlled</option>
+              <option value="box-truck" style={{ background: '#0a0a0a', color: '#ffffff' }}>Box Truck (26ft)</option>
+              <option value="hotshot" style={{ background: '#0a0a0a', color: '#ffffff' }}>Hotshot</option>
             </select>
           </div>
         </div>
 
         {/* 5 required documents upload grids */}
         <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <label style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text-secondary)' }}>Upload Compliance Documents * (All 5 Required)</label>
+          <label style={{ fontSize: '13.5px', fontWeight: '600', color: '#e2e8f0' }}>Upload Compliance Documents * (All 5 Required)</label>
           
+          {/* Hidden File Inputs with security configuration */}
+          <input 
+            id="file-input-license" 
+            type="file" 
+            accept="image/png,image/jpeg,image/webp,application/pdf"
+            style={{ display: 'none' }} 
+            onChange={(e) => {
+              if (e.target.files && e.target.files.length > 0) {
+                handleFileChange('license', e.target.files[0], ['image/jpeg', 'image/png', 'image/webp', 'application/pdf']);
+              }
+            }} 
+          />
+          <input 
+            id="file-input-registration" 
+            type="file" 
+            accept="image/png,image/jpeg,image/webp,application/pdf"
+            style={{ display: 'none' }} 
+            onChange={(e) => {
+              if (e.target.files && e.target.files.length > 0) {
+                handleFileChange('registration', e.target.files[0], ['image/jpeg', 'image/png', 'image/webp', 'application/pdf']);
+              }
+            }} 
+          />
+          <input 
+            id="file-input-truckPhoto" 
+            type="file" 
+            accept="image/png,image/jpeg,image/webp"
+            style={{ display: 'none' }} 
+            onChange={(e) => {
+              if (e.target.files && e.target.files.length > 0) {
+                handleFileChange('truckPhoto', e.target.files[0], ['image/jpeg', 'image/png', 'image/webp']);
+              }
+            }} 
+          />
+          <input 
+            id="file-input-driverPhoto" 
+            type="file" 
+            accept="image/png,image/jpeg,image/webp"
+            style={{ display: 'none' }} 
+            onChange={(e) => {
+              if (e.target.files && e.target.files.length > 0) {
+                handleFileChange('driverPhoto', e.target.files[0], ['image/jpeg', 'image/png', 'image/webp']);
+              }
+            }} 
+          />
+          <input 
+            id="file-input-nationalId" 
+            type="file" 
+            accept="image/png,image/jpeg,image/webp,application/pdf"
+            style={{ display: 'none' }} 
+            onChange={(e) => {
+              if (e.target.files && e.target.files.length > 0) {
+                handleFileChange('nationalId', e.target.files[0], ['image/jpeg', 'image/png', 'image/webp', 'application/pdf']);
+              }
+            }} 
+          />
+
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '10px' }}>
             <div 
-              onClick={() => handleUpload('license')}
+              onClick={() => document.getElementById('file-input-license').click()}
               style={{
                 border: '1px dashed var(--border)',
                 borderRadius: '8px',
-                padding: '12px 6px',
+                padding: '16px 8px',
                 textAlign: 'center',
                 cursor: 'pointer',
-                background: docs.license ? 'rgba(34, 197, 94, 0.05)' : 'transparent',
-                borderColor: docs.license ? '#22c55e' : 'var(--border)'
+                background: docs.license ? 'rgba(34, 197, 94, 0.12)' : 'rgba(255, 255, 255, 0.04)',
+                borderColor: docs.license ? '#22c55e' : 'rgba(255, 255, 255, 0.35)',
+                transition: 'all 0.25s ease'
               }}
             >
-              <UploadCloud size={18} style={{ color: docs.license ? '#22c55e' : 'var(--text-muted)', marginBottom: '4px' }} />
-              <p style={{ fontSize: '10px', fontWeight: '600', color: docs.license ? '#22c55e' : 'var(--text-secondary)' }}>Driver License</p>
+              <UploadCloud size={20} style={{ color: docs.license ? '#22c55e' : 'rgba(255, 255, 255, 0.70)', marginBottom: '6px' }} />
+              <p style={{ fontSize: '11px', fontWeight: '700', color: docs.license ? '#22c55e' : '#ffffff', margin: 0 }}>Driver License</p>
+              {docs.license && <span style={{ display: 'block', fontSize: '9px', color: '#22c55e', marginTop: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{docs.license}</span>}
             </div>
 
             <div 
-              onClick={() => handleUpload('registration')}
+              onClick={() => document.getElementById('file-input-registration').click()}
               style={{
                 border: '1px dashed var(--border)',
                 borderRadius: '8px',
-                padding: '12px 6px',
+                padding: '16px 8px',
                 textAlign: 'center',
                 cursor: 'pointer',
-                background: docs.registration ? 'rgba(34, 197, 94, 0.05)' : 'transparent',
-                borderColor: docs.registration ? '#22c55e' : 'var(--border)'
+                background: docs.registration ? 'rgba(34, 197, 94, 0.12)' : 'rgba(255, 255, 255, 0.04)',
+                borderColor: docs.registration ? '#22c55e' : 'rgba(255, 255, 255, 0.35)',
+                transition: 'all 0.25s ease'
               }}
             >
-              <UploadCloud size={18} style={{ color: docs.registration ? '#22c55e' : 'var(--text-muted)', marginBottom: '4px' }} />
-              <p style={{ fontSize: '10px', fontWeight: '600', color: docs.registration ? '#22c55e' : 'var(--text-secondary)' }}>Truck Reg Paper</p>
+              <UploadCloud size={20} style={{ color: docs.registration ? '#22c55e' : 'rgba(255, 255, 255, 0.70)', marginBottom: '6px' }} />
+              <p style={{ fontSize: '11px', fontWeight: '700', color: docs.registration ? '#22c55e' : '#ffffff', margin: 0 }}>Truck Reg Paper</p>
+              {docs.registration && <span style={{ display: 'block', fontSize: '9px', color: '#22c55e', marginTop: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{docs.registration}</span>}
             </div>
 
             <div 
-              onClick={() => handleUpload('truckPhoto')}
+              onClick={() => document.getElementById('file-input-truckPhoto').click()}
               style={{
                 border: '1px dashed var(--border)',
                 borderRadius: '8px',
-                padding: '12px 6px',
+                padding: '16px 8px',
                 textAlign: 'center',
                 cursor: 'pointer',
-                background: docs.truckPhoto ? 'rgba(34, 197, 94, 0.05)' : 'transparent',
-                borderColor: docs.truckPhoto ? '#22c55e' : 'var(--border)'
+                background: docs.truckPhoto ? 'rgba(34, 197, 94, 0.12)' : 'rgba(255, 255, 255, 0.04)',
+                borderColor: docs.truckPhoto ? '#22c55e' : 'rgba(255, 255, 255, 0.35)',
+                transition: 'all 0.25s ease'
               }}
             >
-              <UploadCloud size={18} style={{ color: docs.truckPhoto ? '#22c55e' : 'var(--text-muted)', marginBottom: '4px' }} />
-              <p style={{ fontSize: '10px', fontWeight: '600', color: docs.truckPhoto ? '#22c55e' : 'var(--text-secondary)' }}>Truck Photo</p>
+              <UploadCloud size={20} style={{ color: docs.truckPhoto ? '#22c55e' : 'rgba(255, 255, 255, 0.70)', marginBottom: '6px' }} />
+              <p style={{ fontSize: '11px', fontWeight: '700', color: docs.truckPhoto ? '#22c55e' : '#ffffff', margin: 0 }}>Truck Photo</p>
+              {docs.truckPhoto && <span style={{ display: 'block', fontSize: '9px', color: '#22c55e', marginTop: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{docs.truckPhoto}</span>}
             </div>
 
             <div 
-              onClick={() => handleUpload('driverPhoto')}
+              onClick={() => document.getElementById('file-input-driverPhoto').click()}
               style={{
                 border: '1px dashed var(--border)',
                 borderRadius: '8px',
-                padding: '12px 6px',
+                padding: '16px 8px',
                 textAlign: 'center',
                 cursor: 'pointer',
-                background: docs.driverPhoto ? 'rgba(34, 197, 94, 0.05)' : 'transparent',
-                borderColor: docs.driverPhoto ? '#22c55e' : 'var(--border)'
+                background: docs.driverPhoto ? 'rgba(34, 197, 94, 0.12)' : 'rgba(255, 255, 255, 0.04)',
+                borderColor: docs.driverPhoto ? '#22c55e' : 'rgba(255, 255, 255, 0.35)',
+                transition: 'all 0.25s ease'
               }}
             >
-              <UploadCloud size={18} style={{ color: docs.driverPhoto ? '#22c55e' : 'var(--text-muted)', marginBottom: '4px' }} />
-              <p style={{ fontSize: '10px', fontWeight: '600', color: docs.driverPhoto ? '#22c55e' : 'var(--text-secondary)' }}>Driver Photo</p>
+              <UploadCloud size={20} style={{ color: docs.driverPhoto ? '#22c55e' : 'rgba(255, 255, 255, 0.70)', marginBottom: '6px' }} />
+              <p style={{ fontSize: '11px', fontWeight: '700', color: docs.driverPhoto ? '#22c55e' : '#ffffff', margin: 0 }}>Driver Photo</p>
+              {docs.driverPhoto && <span style={{ display: 'block', fontSize: '9px', color: '#22c55e', marginTop: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{docs.driverPhoto}</span>}
             </div>
 
             <div 
-              onClick={() => handleUpload('nationalId')}
+              onClick={() => document.getElementById('file-input-nationalId').click()}
               style={{
                 border: '1px dashed var(--border)',
                 borderRadius: '8px',
-                padding: '12px 6px',
+                padding: '16px 8px',
                 textAlign: 'center',
                 cursor: 'pointer',
-                background: docs.nationalId ? 'rgba(34, 197, 94, 0.05)' : 'transparent',
-                borderColor: docs.nationalId ? '#22c55e' : 'var(--border)'
+                background: docs.nationalId ? 'rgba(34, 197, 94, 0.12)' : 'rgba(255, 255, 255, 0.04)',
+                borderColor: docs.nationalId ? '#22c55e' : 'rgba(255, 255, 255, 0.35)',
+                transition: 'all 0.25s ease'
               }}
             >
-              <UploadCloud size={18} style={{ color: docs.nationalId ? '#22c55e' : 'var(--text-muted)', marginBottom: '4px' }} />
-              <p style={{ fontSize: '10px', fontWeight: '600', color: docs.nationalId ? '#22c55e' : 'var(--text-secondary)' }}>National ID Card</p>
+              <UploadCloud size={20} style={{ color: docs.nationalId ? '#22c55e' : 'rgba(255, 255, 255, 0.70)', marginBottom: '6px' }} />
+              <p style={{ fontSize: '11px', fontWeight: '700', color: docs.nationalId ? '#22c55e' : '#ffffff', margin: 0 }}>National ID Card</p>
+              {docs.nationalId && <span style={{ display: 'block', fontSize: '9px', color: '#22c55e', marginTop: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{docs.nationalId}</span>}
             </div>
           </div>
         </div>

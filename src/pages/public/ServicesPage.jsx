@@ -1,10 +1,30 @@
 import Services from '../../components/Services/Services';
 import { Check, X, ShieldAlert, BadgeDollarSign, Truck, Calendar } from 'lucide-react';
+import heroStyles from '../../styles/PageHero.module.css';
 import styles from './ServicesPage.module.css';
 
 export default function ServicesPage() {
   return (
     <div className={styles.servicesPage}>
+
+      {/* ── Hero Banner ── */}
+      <div className={heroStyles.pageHero}>
+        <div className={heroStyles.pageHeroBg}>
+          <img src="/media/highway_truck.png" alt="Highway Trucking Operations" />
+        </div>
+        <div className={heroStyles.pageHeroOverlay} />
+        <div className={heroStyles.pageHeroContent}>
+          <span className={heroStyles.pageHeroLabel}>What We Do</span>
+          <h1 className={heroStyles.pageHeroTitle}>
+            Full-Service <span>Dispatch Solutions</span>
+          </h1>
+          <p className={heroStyles.pageHeroSub}>
+            From load finding and rate negotiation to compliance audits and factoring paperwork —
+            we handle every mile of your back-office so you can focus on the road.
+          </p>
+        </div>
+      </div>
+
       <Services />
 
       {/* Comparison Section */}

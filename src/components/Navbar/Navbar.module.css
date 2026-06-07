@@ -3,7 +3,7 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 99999;
   padding: 12px 0;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border-bottom: 1px solid transparent;
@@ -28,33 +28,49 @@
 .navbarLogo {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 22px;
-  font-weight: 900;
-  letter-spacing: -0.5px;
-  color: var(--text-primary);
+  flex-shrink: 0;
+  text-decoration: none;
+  height: 40px;
+  width: 180px;
+  position: relative;
 }
 
-.logoIcon {
-  width: 36px;
-  height: 36px;
-  background: var(--accent);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #000;
+.logoImg {
+  height: 130px;
+  width: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: block;
+  transition: var(--transition);
+  filter: invert(1) hue-rotate(180deg) saturate(1.8) brightness(0.75); /* Invert white to black, keep blue accents blue */
 }
 
-.logoDot {
-  color: var(--accent);
+/* In dark mode, keep the original white colors */
+:global(.dark-theme) .logoImg {
+  filter: none;
+}
+
+.navbar.scrolled .logoImg {
+  height: 104px; /* Slightly smaller on scroll */
+  transform: translate(-50%, -50%);
 }
 
 /* NAV LINKS */
 .navbarLinks {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 0;
+  justify-content: center;
+  flex: 1;
+  padding: 0 24px;
+}
+
+.navbarLinks li {
+  flex: 1;
+  display: flex;
+  justify-content: center;
 }
 
 .navbarLinks a {
@@ -63,6 +79,8 @@
   color: var(--text-secondary);
   transition: var(--transition);
   position: relative;
+  white-space: nowrap;
+  padding: 6px 4px;
 }
 
 .navbarLinks a::after {
@@ -165,8 +183,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 40px;
+  justify-content: flex-start;
+  padding: 100px 24px 40px;
+  gap: 32px;
+  overflow-y: auto;
 }
 
 .mobileMenuLinks {
@@ -228,3 +248,19 @@
   background: var(--bg-surface);
   color: var(--accent);
 }
+
+@media (max-width: 600px) {
+  .navbarLogo {
+    width: 140px;
+  }
+  .logoImg {
+    height: 100px;
+  }
+  .navbar.scrolled .logoImg {
+    height: 80px;
+  }
+  .loginLink {
+    display: none;
+  }
+}
+

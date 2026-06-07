@@ -7,29 +7,19 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Truck, DollarSign, Navigation, Calendar, MapPin, Clock } from 'lucide-react';
 import styles from './CarrierDashboard.module.css';
 
-// Chart data mapping week earnings
-const CHART_DATA = [
-  { name: 'Mon', earnings: 800 },
-  { name: 'Tue', earnings: 1500 },
-  { name: 'Wed', earnings: 1200 },
-  { name: 'Thu', earnings: 2400 },
-  { name: 'Fri', earnings: 3200 },
-  { name: 'Sat', earnings: 1800 },
-  { name: 'Sun', earnings: 900 }
-];
-
 export default function CarrierDashboard() {
   const { user } = useAuth();
   const [activeLoad, setActiveLoad] = useState(null);
   const [completedLoads, setCompletedLoads] = useState([]);
   const [pendingPayout, setPendingPayout] = useState(0);
+  const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
     if (!user) return;
     const db = getMockDb();
     
     // Find loads assigned to this logged in carrier email
-    const myOrders = db.orders.filter(o => o.carrierEmail.toLowerCase() === user.email.toLowerCase());
+    const myOrders = db.orders.filter(o => o.carrierEmail && user.email && o.carrierEmail.toLowerCase() === user.email.toLowerCase());
     
     // Active loads are those not marked 'delivered'
     const active = myOrders.find(o => o.status !== 'delivered');
@@ -44,6 +34,41 @@ export default function CarrierDashboard() {
     setActiveLoad(active || null);
     setCompletedLoads(completed);
     setPendingPayout(pending);
+
+    // Dynamic Chart Data Generation (Flattened by default, updates gradually)
+    const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const last7Days = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().substring(0, 10);
+      const dayName = daysOfWeek[d.getDay()];
+      last7Days.push({
+        dateStr,
+        name: dayName,
+        earnings: 0
+      });
+    }
+
+    if (completed.length === 0) {
+      setChartData(last7Days.map(day => ({ name: day.name, earnings: 0 })));
+    } else {
+      const groups = {};
+      completed.forEach(order => {
+        const d = order.date || 'N/A';
+        groups[d] = (groups[d] || 0) + order.driverPayout;
+      });
+      const sortedDates = Object.keys(groups).sort();
+      const mapped = sortedDates.map(dateStr => {
+        const parts = dateStr.split('-');
+        const label = parts.length === 3 ? `${parts[1]}/${parts[2]}` : dateStr;
+        return {
+          name: label,
+          earnings: groups[dateStr]
+        };
+      });
+      setChartData(mapped);
+    }
   }, [user]);
 
   const totalNetEarnings = completedLoads.reduce((sum, o) => sum + o.driverPayout, 0);
@@ -60,7 +85,7 @@ export default function CarrierDashboard() {
           icon={<DollarSign size={20} />} 
           label="Total Net Income" 
           value={`$${totalNetEarnings.toLocaleString()}`} 
-          color="#FFD700" 
+          color="#0f5bbf" 
         />
         <StatCard 
           icon={<Truck size={20} />} 
@@ -88,7 +113,7 @@ export default function CarrierDashboard() {
           <h3>Completed Freight Analytics</h3>
           <div className={styles.chartWrapper}>
             <ResponsiveContainer width="100%" height={280}>
-              <LineChart data={CHART_DATA}>
+              <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                 <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={12} />
                 <YAxis stroke="var(--text-muted)" fontSize={12} />
@@ -96,7 +121,7 @@ export default function CarrierDashboard() {
                   contentStyle={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '8px' }}
                   labelStyle={{ color: 'var(--text-primary)' }}
                 />
-                <Line type="monotone" dataKey="earnings" stroke="var(--accent-gold)" strokeWidth={3} dot={{ fill: 'var(--accent-gold)' }} />
+                <Line type="monotone" dataKey="earnings" stroke="var(--accent)" strokeWidth={3} dot={{ fill: 'var(--accent)' }} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -109,7 +134,7 @@ export default function CarrierDashboard() {
             <div className={styles.loadDetails}>
               <div className={styles.routeHeader}>
                 <div className={styles.point}>
-                  <MapPin size={16} color="var(--accent-gold)" />
+                  <MapPin size={16} color="var(--accent)" />
                   <div>
                     <p className={styles.pointLabel}>Pickup</p>
                     <p className={styles.pointVal}>{activeLoad.pickup}</p>
@@ -139,7 +164,7 @@ export default function CarrierDashboard() {
                 </div>
                 <div>
                   <span className={styles.metaLabel}>My Payout (Net)</span>
-                  <span className={styles.metaVal} style={{ color: 'var(--accent-gold)', fontWeight: 'bold' }}>
+                  <span className={styles.metaVal} style={{ color: 'var(--accent)', fontWeight: 'bold' }}>
                     ${activeLoad.driverPayout.toLocaleString()}
                   </span>
                 </div>

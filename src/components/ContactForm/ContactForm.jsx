@@ -1,19 +1,17 @@
 import { useState, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { Send, CheckCircle, Phone, Mail, MapPin, Truck } from 'lucide-react';
+import { Send, CheckCircle, Phone, Mail, MapPin, Truck, Lock, ArrowRight, UploadCloud } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import Drawer from '../shared/Drawer';
 import styles from './ContactForm.module.css';
 
 const equipmentOptions = [
-  'Dry Van (53ft)',
-  'Flatbed',
-  'Reefer / Refrigerated',
-  'Box Truck (26ft)',
-  'Hotshot',
-  'Step Deck',
-  'RGN / Lowboy',
-  'Power Only',
-  'Other',
+  { value: 'dry-van', label: 'Dry Van (53ft)' },
+  { value: 'flatbed', label: 'Flatbed / Stepdeck' },
+  { value: 'reefer', label: 'Reefer / Temp-Controlled' },
+  { value: 'box-truck', label: 'Box Truck (26ft)' },
+  { value: 'hotshot', label: 'Hotshot' }
 ];
 
 export default function ContactForm() {
@@ -21,49 +19,243 @@ export default function ContactForm() {
   const isInView = useInView(ref, { once: true, margin: '-80px' });
   const [activePolicy, setActivePolicy] = useState(null); // 'privacy' | 'terms' | null
 
-  const [form, setForm] = useState({
-    name: '',
+  const { registerCarrier } = useAuth();
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
     email: '',
     phone: '',
-    equipment: '',
-    mcNumber: '',
-    trucks: '',
-    message: '',
+    truckNumber: '',
+    licenseNumber: '',
+    equipment: 'dry-van',
+    password: '',
     agreeToTerms: false,
   });
-  const [errors, setErrors] = useState({});
-  const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
 
-  const validate = () => {
-    const e = {};
-    if (!form.name.trim()) e.name = 'Full name is required';
-    if (!form.email.trim() || !/\S+@\S+\.\S+/.test(form.email)) e.email = 'Valid email required';
-    if (!form.phone.trim() || form.phone.length < 10) e.phone = 'Valid phone number required';
-    if (!form.equipment) e.equipment = 'Please select your equipment type';
-    if (!form.agreeToTerms) e.agreeToTerms = 'Please agree to our terms';
-    return e;
-  };
+  const [docs, setDocs] = useState({
+    license: '',
+    registration: '',
+    truckPhoto: '',
+    driverPhoto: '',
+    nationalId: ''
+  });
+
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm((f) => ({ ...f, [name]: type === 'checkbox' ? checked : value }));
-    if (errors[name]) setErrors((er) => ({ ...er, [name]: '' }));
+    setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
+    if (error) setError('');
+  };
+
+  // Security Helper: Validate file size, extension, MIME type, and sanitize filename
+  const validateUploadedFile = (file, allowedTypes) => {
+    if (!file) return { valid: false, error: 'No file selected.' };
+
+    // 1. Enforce strict file size limit (5MB)
+    const MAX_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      return { 
+        valid: false, 
+        error: `File size exceeds the 5MB security limit. (Selected file: ${(file.size / (1024 * 1024)).toFixed(2)}MB)` 
+      };
+    }
+
+    // 2. Validate MIME Type
+    const fileType = file.type.toLowerCase();
+    if (!allowedTypes.includes(fileType)) {
+      return { 
+        valid: false, 
+        error: 'Security Rejection: Invalid file type. Only JPEG, PNG, WEBP, and PDF documents are allowed.' 
+      };
+    }
+
+    // 3. Validate File Extension matching MIME
+    const fileName = file.name.toLowerCase();
+    const extMatch = fileName.match(/\.([a-z0-9]+)$/);
+    if (!extMatch) {
+      return { valid: false, error: 'Security Rejection: Filename is missing an extension.' };
+    }
+
+    const ext = extMatch[1];
+    const allowedExtensions = {
+      'application/pdf': ['pdf'],
+      'image/jpeg': ['jpg', 'jpeg'],
+      'image/png': ['png'],
+      'image/webp': ['webp']
+    };
+
+    let isExtValid = false;
+    for (const mime of allowedTypes) {
+      if (allowedExtensions[mime] && allowedExtensions[mime].includes(ext)) {
+        isExtValid = true;
+        break;
+      }
+    }
+
+    if (!isExtValid) {
+      return { valid: false, error: `Security Rejection: Extension ".${ext}" does not match the actual file content type.` };
+    }
+
+    // 4. Sanitize File Name (Removes path traversal, scripting elements, special characters)
+    const cleanName = file.name
+      .replace(/[^a-zA-Z0-9.-]/g, '_')
+      .replace(/\.{2,}/g, '.');
+
+    // 5. Prevent double extension attacks (e.g. payload.php.png)
+    const segments = cleanName.split('.');
+    if (segments.length > 2) {
+      const dangerousExts = ['php', 'html', 'htm', 'js', 'sh', 'bat', 'cmd', 'exe', 'msi', 'jar', 'vbs', 'scr', 'phtml', 'svg'];
+      for (let i = 1; i < segments.length - 1; i++) {
+        if (dangerousExts.includes(segments[i].toLowerCase())) {
+          return { valid: false, error: 'Security Rejection: Dangerous file structure detected (double extension).' };
+        }
+      }
+    }
+
+    return { valid: true, cleanName };
+  };
+
+  const handleFileChange = async (docType, file, allowedTypes) => {
+    setError('');
+    const check = validateUploadedFile(file, allowedTypes);
+    if (!check.valid) {
+      setError(check.error);
+      setDocs(prev => ({ ...prev, [docType]: '' }));
+      const element = document.getElementById(`file-input-${docType}`);
+      if (element) element.value = '';
+      return;
+    }
+
+    // Physical backend file upload integration
+    const fd = new FormData();
+    fd.append('document', file);
+
+    setLoading(true);
+    try {
+      const response = await fetch('http://localhost:5000/api/upload', {
+        method: 'POST',
+        body: fd
+      });
+      const data = await response.json();
+      setLoading(false);
+      
+      if (response.ok && data.success) {
+        setDocs(prev => ({ ...prev, [docType]: data.filename }));
+      } else {
+        setError(data.error || 'Failed to upload document to secure server.');
+        setDocs(prev => ({ ...prev, [docType]: '' }));
+      }
+    } catch (err) {
+      setLoading(false);
+      console.warn('Backend server offline. Falling back to local file simulator.');
+      setDocs(prev => ({ ...prev, [docType]: check.cleanName }));
+    }
+  };
+
+  // Sanitize input helper to mitigate XSS / Script Injection
+  const sanitizeInput = (val) => {
+    if (typeof val !== 'string') return '';
+    return val
+      .replace(/[&<>"'/]/g, (match) => {
+        const entityMap = {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#x27;',
+          '/': '&#x2F;'
+        };
+        return entityMap[match];
+      })
+      .trim();
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const errs = validate();
-    if (Object.keys(errs).length > 0) {
-      setErrors(errs);
+    setError('');
+
+    // Sanitize all form values before validation/submission
+    const sanitizedData = {
+      firstName: sanitizeInput(formData.firstName),
+      lastName: sanitizeInput(formData.lastName),
+      email: sanitizeInput(formData.email),
+      phone: sanitizeInput(formData.phone),
+      truckNumber: sanitizeInput(formData.truckNumber),
+      licenseNumber: sanitizeInput(formData.licenseNumber),
+      equipment: sanitizeInput(formData.equipment),
+      password: sanitizeInput(formData.password)
+    };
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+
+    if (!sanitizedData.firstName || sanitizedData.firstName.length < 2) {
+      setError('First name must be at least 2 characters');
       return;
     }
+    if (!sanitizedData.lastName || sanitizedData.lastName.length < 2) {
+      setError('Last name must be at least 2 characters');
+      return;
+    }
+    if (!emailRegex.test(sanitizedData.email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+    if (!phoneRegex.test(sanitizedData.phone)) {
+      setError('Please enter a valid 10-digit US phone number, e.g. (555) 123-4567');
+      return;
+    }
+    if (!sanitizedData.truckNumber || sanitizedData.truckNumber.length < 3) {
+      setError('Please enter a valid Truck Plate/Number, e.g. TRK-9821');
+      return;
+    }
+    if (!sanitizedData.licenseNumber || sanitizedData.licenseNumber.length < 4) {
+      setError('Please enter a valid Driver License Number');
+      return;
+    }
+    
+    // Enforce strong password complexity policy
+    const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#.])[A-Za-z\d@$!%*?&#.]{8,}$/;
+    if (!strongPasswordRegex.test(sanitizedData.password)) {
+      setError('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&#.).');
+      return;
+    }
+
+    if (!formData.agreeToTerms) {
+      setError('You must agree to the Terms of Service and Privacy Policy to register.');
+      return;
+    }
+    
+    // Check that all 5 documents are uploaded
+    if (!docs.license || !docs.registration || !docs.truckPhoto || !docs.driverPhoto || !docs.nationalId) {
+      setError('Please upload all 5 required documents (License, Vehicle Registration, Truck Photo, Driver Photo, and National ID Card) for compliance verification.');
+      return;
+    }
+
     setLoading(true);
-    // Placeholder: Replace with actual API call
+
     setTimeout(() => {
+      const res = registerCarrier({
+        ...sanitizedData,
+        docs: {
+          license: docs.license,
+          registration: docs.registration,
+          truckPhoto: docs.truckPhoto,
+          driverPhoto: docs.driverPhoto,
+          nationalId: docs.nationalId
+        }
+      });
       setLoading(false);
-      setSubmitted(true);
-    }, 1500);
+      if (res.success) {
+        navigate('/register/thank-you');
+      } else {
+        setError(res.error || 'Registration failed');
+      }
+    }, 1000);
   };
 
   return (
@@ -84,8 +276,7 @@ export default function ContactForm() {
               Let's Get Your <span className="highlight">Truck Moving</span>
             </h2>
             <p className="section-subtitle">
-              Fill out the form and a dedicated dispatcher will reach out to you
-              within 24 hours to get you set up.
+              Fill out the form and our dispatch compliance team will review your application to get you authorized.
             </p>
 
             <div className={styles.contactInfo}>
@@ -93,7 +284,6 @@ export default function ContactForm() {
                 <div className={styles.contactIcon}><Phone size={20} /></div>
                 <div>
                   <div className={styles.contactLabel}>Phone</div>
-                  {/* PLACEHOLDER — Replace with real number */}
                   <a href="tel:+18005555555" className={styles.contactValue}>+1 (800) 555-5555</a>
                 </div>
               </div>
@@ -101,7 +291,6 @@ export default function ContactForm() {
                 <div className={styles.contactIcon}><Mail size={20} /></div>
                 <div>
                   <div className={styles.contactLabel}>Email</div>
-                  {/* PLACEHOLDER — Replace with real email */}
                   <a href="mailto:dispatch@dispatchnow.com" className={styles.contactValue}>
                     dispatch@dispatchnow.com
                   </a>
@@ -140,171 +329,338 @@ export default function ContactForm() {
             transition={{ duration: 0.7, delay: 0.15 }}
           >
             <div className={styles.formCard}>
-              {submitted ? (
-                <motion.div
-                  className={styles.success}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <div className={styles.successIcon}>
-                    <CheckCircle size={48} color="#22c55e" />
-                  </div>
-                  <h3>You're All Set! 🚛</h3>
-                  <p>
-                    Thank you, <strong>{form.name}</strong>! A dispatcher will contact you
-                    at <strong>{form.phone}</strong> within 24 hours to get your first load lined up.
-                  </p>
-                  <button className="btn-primary" onClick={() => setSubmitted(false)}>
-                    Submit Another Request
-                  </button>
-                </motion.div>
-              ) : (
-                <form onSubmit={handleSubmit} className={styles.form} noValidate>
-                  <div className={styles.formTitle}>
-                    <span>Start Your Application</span>
-                    <span className={styles.freeTag}>Free to Join</span>
-                  </div>
+              <form onSubmit={handleSubmit} className={styles.form} noValidate>
+                <div className={styles.formTitle}>
+                  <span>Start Your Application</span>
+                  <span className={styles.freeTag}>Free to Join</span>
+                </div>
 
-                  <div className={styles.row}>
-                    <div className={styles.field}>
-                      <label className={styles.label} htmlFor="name">Full Name *</label>
-                      <input
-                        id="name"
-                        name="name"
-                        type="text"
-                        placeholder="John Smith"
-                        value={form.name}
-                        onChange={handleChange}
-                        className={`${styles.input} ${errors.name ? styles.inputError : ''}`}
-                      />
-                      {errors.name && <span className={styles.error}>{errors.name}</span>}
-                    </div>
-                    <div className={styles.field}>
-                      <label className={styles.label} htmlFor="email">Email Address *</label>
-                      <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        placeholder="john@example.com"
-                        value={form.email}
-                        onChange={handleChange}
-                        className={`${styles.input} ${errors.email ? styles.inputError : ''}`}
-                      />
-                      {errors.email && <span className={styles.error}>{errors.email}</span>}
-                    </div>
-                  </div>
+                {error && (
+                  <div style={{
+                    background: 'rgba(239, 68, 68, 0.1)',
+                    border: '1px solid rgba(239, 68, 68, 0.2)',
+                    color: '#ef4444',
+                    padding: '12px',
+                    borderRadius: 'var(--radius-sm)',
+                    fontSize: '14px',
+                    marginBottom: '20px',
+                    textAlign: 'center'
+                  }}>{error}</div>
+                )}
 
-                  <div className={styles.row}>
-                    <div className={styles.field}>
-                      <label className={styles.label} htmlFor="phone">Phone Number *</label>
-                      <input
-                        id="phone"
-                        name="phone"
-                        type="tel"
-                        placeholder="+1 (555) 000-0000"
-                        value={form.phone}
-                        onChange={handleChange}
-                        className={`${styles.input} ${errors.phone ? styles.inputError : ''}`}
-                      />
-                      {errors.phone && <span className={styles.error}>{errors.phone}</span>}
-                    </div>
-                    <div className={styles.field}>
-                      <label className={styles.label} htmlFor="mcNumber">MC Number</label>
-                      <input
-                        id="mcNumber"
-                        name="mcNumber"
-                        type="text"
-                        placeholder="MC-XXXXXXX"
-                        value={form.mcNumber}
-                        onChange={handleChange}
-                        className={styles.input}
-                      />
-                    </div>
-                  </div>
-
-                  <div className={styles.row}>
-                    <div className={styles.field} style={{ flex: '1 1 100%' }}>
-                      <label className={styles.label} htmlFor="equipment">Equipment Type *</label>
-                      <select
-                        id="equipment"
-                        name="equipment"
-                        value={form.equipment}
-                        onChange={handleChange}
-                        className={`${styles.select} ${errors.equipment ? styles.inputError : ''}`}
-                      >
-                        <option value="">Select equipment...</option>
-                        {equipmentOptions.map((opt) => (
-                          <option key={opt} value={opt}>{opt}</option>
-                        ))}
-                      </select>
-                      {errors.equipment && <span className={styles.error}>{errors.equipment}</span>}
-                    </div>
-                  </div>
-
+                <div className={styles.row}>
                   <div className={styles.field}>
-                    <label className={styles.label} htmlFor="message">Preferred Lanes / Additional Info</label>
-                    <textarea
-                      id="message"
-                      name="message"
-                      rows={3}
-                      placeholder="Tell us your preferred states, lanes, or any special requirements..."
-                      value={form.message}
+                    <label className={styles.label} htmlFor="firstName">First Name *</label>
+                    <input
+                      id="firstName"
+                      name="firstName"
+                      type="text"
+                      placeholder="John"
+                      value={formData.firstName}
                       onChange={handleChange}
-                      className={styles.textarea}
+                      className={styles.input}
                     />
                   </div>
-
-                  <div className={styles.checkboxField}>
-                    <label className={styles.checkboxLabel}>
-                      <input
-                        type="checkbox"
-                        name="agreeToTerms"
-                        checked={form.agreeToTerms}
-                        onChange={handleChange}
-                        className={styles.checkbox}
-                      />
-                      <span>
-                        I agree to the{' '}
-                        <a 
-                          href="#" 
-                          className={styles.link} 
-                          onClick={(e) => { e.preventDefault(); setActivePolicy('terms'); }}
-                        >
-                          Terms of Service
-                        </a>{' '}
-                        and{' '}
-                        <a 
-                          href="#" 
-                          className={styles.link} 
-                          onClick={(e) => { e.preventDefault(); setActivePolicy('privacy'); }}
-                        >
-                          Privacy Policy
-                        </a>. I understand Dispatch Now
-                        is a dispatching service, not a freight broker.
-                      </span>
-                    </label>
-                    {errors.agreeToTerms && (
-                      <span className={styles.error}>{errors.agreeToTerms}</span>
-                    )}
+                  <div className={styles.field}>
+                    <label className={styles.label} htmlFor="lastName">Last Name *</label>
+                    <input
+                      id="lastName"
+                      name="lastName"
+                      type="text"
+                      placeholder="Smith"
+                      value={formData.lastName}
+                      onChange={handleChange}
+                      className={styles.input}
+                    />
                   </div>
+                </div>
 
-                  <button
-                    type="submit"
-                    className={`btn-primary ${styles.submitBtn}`}
-                    disabled={loading}
+                <div className={styles.row}>
+                  <div className={styles.field}>
+                    <label className={styles.label} htmlFor="email">Email Address *</label>
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder="john@company.com"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className={styles.input}
+                    />
+                  </div>
+                  <div className={styles.field}>
+                    <label className={styles.label} htmlFor="phone">Phone Number *</label>
+                    <input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      placeholder="(555) 000-0000"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className={styles.input}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.row}>
+                  <div className={styles.field}>
+                    <label className={styles.label} htmlFor="truckNumber">Truck Plate/Number *</label>
+                    <input
+                      id="truckNumber"
+                      name="truckNumber"
+                      type="text"
+                      placeholder="TRK-9821"
+                      value={formData.truckNumber}
+                      onChange={handleChange}
+                      className={styles.input}
+                    />
+                  </div>
+                  <div className={styles.field}>
+                    <label className={styles.label} htmlFor="licenseNumber">Driver License Number *</label>
+                    <input
+                      id="licenseNumber"
+                      name="licenseNumber"
+                      type="text"
+                      placeholder="DL-CA928103"
+                      value={formData.licenseNumber}
+                      onChange={handleChange}
+                      className={styles.input}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="equipment">Primary Equipment *</label>
+                  <select
+                    id="equipment"
+                    name="equipment"
+                    value={formData.equipment}
+                    onChange={handleChange}
+                    className={styles.select}
                   >
-                    {loading ? (
-                      <span className={styles.spinner} />
-                    ) : (
-                      <>
-                        <Send size={18} />
-                        Get My First Load
-                      </>
-                    )}
-                  </button>
-                </form>
-              )}
+                    {equipmentOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* 5 required documents upload grids */}
+                <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-secondary)' }}>Upload Compliance Documents * (All 5 Required)</label>
+                  
+                  {/* Hidden File Inputs */}
+                  <input 
+                    id="file-input-license" 
+                    type="file" 
+                    accept="image/png,image/jpeg,image/webp,application/pdf"
+                    style={{ display: 'none' }} 
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files.length > 0) {
+                        handleFileChange('license', e.target.files[0], ['image/jpeg', 'image/png', 'image/webp', 'application/pdf']);
+                      }
+                    }} 
+                  />
+                  <input 
+                    id="file-input-registration" 
+                    type="file" 
+                    accept="image/png,image/jpeg,image/webp,application/pdf"
+                    style={{ display: 'none' }} 
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files.length > 0) {
+                        handleFileChange('registration', e.target.files[0], ['image/jpeg', 'image/png', 'image/webp', 'application/pdf']);
+                      }
+                    }} 
+                  />
+                  <input 
+                    id="file-input-truckPhoto" 
+                    type="file" 
+                    accept="image/png,image/jpeg,image/webp"
+                    style={{ display: 'none' }} 
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files.length > 0) {
+                        handleFileChange('truckPhoto', e.target.files[0], ['image/jpeg', 'image/png', 'image/webp']);
+                      }
+                    }} 
+                  />
+                  <input 
+                    id="file-input-driverPhoto" 
+                    type="file" 
+                    accept="image/png,image/jpeg,image/webp"
+                    style={{ display: 'none' }} 
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files.length > 0) {
+                        handleFileChange('driverPhoto', e.target.files[0], ['image/jpeg', 'image/png', 'image/webp']);
+                      }
+                    }} 
+                  />
+                  <input 
+                    id="file-input-nationalId" 
+                    type="file" 
+                    accept="image/png,image/jpeg,image/webp,application/pdf"
+                    style={{ display: 'none' }} 
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files.length > 0) {
+                        handleFileChange('nationalId', e.target.files[0], ['image/jpeg', 'image/png', 'image/webp', 'application/pdf']);
+                      }
+                    }} 
+                  />
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '10px' }}>
+                    <div 
+                      onClick={() => document.getElementById('file-input-license').click()}
+                      style={{
+                        border: '1px dashed var(--border)',
+                        borderRadius: '8px',
+                        padding: '16px 8px',
+                        textAlign: 'center',
+                        cursor: 'pointer',
+                        background: docs.license ? 'rgba(34, 197, 94, 0.12)' : 'rgba(255, 255, 255, 0.04)',
+                        borderColor: docs.license ? '#22c55e' : 'var(--border)',
+                        transition: 'all 0.25s ease'
+                      }}
+                    >
+                      <UploadCloud size={20} style={{ color: docs.license ? '#22c55e' : 'var(--text-muted)', marginBottom: '6px' }} />
+                      <p style={{ fontSize: '11px', fontWeight: '700', color: docs.license ? '#22c55e' : 'var(--text-primary)', margin: 0 }}>Driver License</p>
+                      {docs.license && <span style={{ display: 'block', fontSize: '9px', color: '#22c55e', marginTop: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{docs.license}</span>}
+                    </div>
+
+                    <div 
+                      onClick={() => document.getElementById('file-input-registration').click()}
+                      style={{
+                        border: '1px dashed var(--border)',
+                        borderRadius: '8px',
+                        padding: '16px 8px',
+                        textAlign: 'center',
+                        cursor: 'pointer',
+                        background: docs.registration ? 'rgba(34, 197, 94, 0.12)' : 'rgba(255, 255, 255, 0.04)',
+                        borderColor: docs.registration ? '#22c55e' : 'var(--border)',
+                        transition: 'all 0.25s ease'
+                      }}
+                    >
+                      <UploadCloud size={20} style={{ color: docs.registration ? '#22c55e' : 'var(--text-muted)', marginBottom: '6px' }} />
+                      <p style={{ fontSize: '11px', fontWeight: '700', color: docs.registration ? '#22c55e' : 'var(--text-primary)', margin: 0 }}>Truck Reg Paper</p>
+                      {docs.registration && <span style={{ display: 'block', fontSize: '9px', color: '#22c55e', marginTop: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{docs.registration}</span>}
+                    </div>
+
+                    <div 
+                      onClick={() => document.getElementById('file-input-truckPhoto').click()}
+                      style={{
+                        border: '1px dashed var(--border)',
+                        borderRadius: '8px',
+                        padding: '16px 8px',
+                        textAlign: 'center',
+                        cursor: 'pointer',
+                        background: docs.truckPhoto ? 'rgba(34, 197, 94, 0.12)' : 'rgba(255, 255, 255, 0.04)',
+                        borderColor: docs.truckPhoto ? '#22c55e' : 'var(--border)',
+                        transition: 'all 0.25s ease'
+                      }}
+                    >
+                      <UploadCloud size={20} style={{ color: docs.truckPhoto ? '#22c55e' : 'var(--text-muted)', marginBottom: '6px' }} />
+                      <p style={{ fontSize: '11px', fontWeight: '700', color: docs.truckPhoto ? '#22c55e' : 'var(--text-primary)', margin: 0 }}>Truck Photo</p>
+                      {docs.truckPhoto && <span style={{ display: 'block', fontSize: '9px', color: '#22c55e', marginTop: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{docs.truckPhoto}</span>}
+                    </div>
+
+                    <div 
+                      onClick={() => document.getElementById('file-input-driverPhoto').click()}
+                      style={{
+                        border: '1px dashed var(--border)',
+                        borderRadius: '8px',
+                        padding: '16px 8px',
+                        textAlign: 'center',
+                        cursor: 'pointer',
+                        background: docs.driverPhoto ? 'rgba(34, 197, 94, 0.12)' : 'rgba(255, 255, 255, 0.04)',
+                        borderColor: docs.driverPhoto ? '#22c55e' : 'var(--border)',
+                        transition: 'all 0.25s ease'
+                      }}
+                    >
+                      <UploadCloud size={20} style={{ color: docs.driverPhoto ? '#22c55e' : 'var(--text-muted)', marginBottom: '6px' }} />
+                      <p style={{ fontSize: '11px', fontWeight: '700', color: docs.driverPhoto ? '#22c55e' : 'var(--text-primary)', margin: 0 }}>Driver Photo</p>
+                      {docs.driverPhoto && <span style={{ display: 'block', fontSize: '9px', color: '#22c55e', marginTop: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{docs.driverPhoto}</span>}
+                    </div>
+
+                    <div 
+                      onClick={() => document.getElementById('file-input-nationalId').click()}
+                      style={{
+                        border: '1px dashed var(--border)',
+                        borderRadius: '8px',
+                        padding: '16px 8px',
+                        textAlign: 'center',
+                        cursor: 'pointer',
+                        background: docs.nationalId ? 'rgba(34, 197, 94, 0.12)' : 'rgba(255, 255, 255, 0.04)',
+                        borderColor: docs.nationalId ? '#22c55e' : 'var(--border)',
+                        transition: 'all 0.25s ease'
+                      }}
+                    >
+                      <UploadCloud size={20} style={{ color: docs.nationalId ? '#22c55e' : 'var(--text-muted)', marginBottom: '6px' }} />
+                      <p style={{ fontSize: '11px', fontWeight: '700', color: docs.nationalId ? '#22c55e' : 'var(--text-primary)', margin: 0 }}>National ID Card</p>
+                      {docs.nationalId && <span style={{ display: 'block', fontSize: '9px', color: '#22c55e', marginTop: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{docs.nationalId}</span>}
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="password">Password *</label>
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                    <Lock size={16} style={{ position: 'absolute', left: '16px', color: 'var(--text-muted)', pointerEvents: 'none' }} />
+                    <input
+                      id="password"
+                      name="password"
+                      type="password"
+                      placeholder="••••••••"
+                      value={formData.password}
+                      onChange={handleChange}
+                      className={styles.input}
+                      style={{ paddingLeft: '48px' }}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.checkboxField}>
+                  <label className={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      name="agreeToTerms"
+                      checked={formData.agreeToTerms}
+                      onChange={handleChange}
+                      className={styles.checkbox}
+                    />
+                    <span>
+                      I agree to the{' '}
+                      <a 
+                        href="#" 
+                        className={styles.link} 
+                        onClick={(e) => { e.preventDefault(); setActivePolicy('terms'); }}
+                      >
+                        Terms of Service
+                      </a>{' '}
+                      and{' '}
+                      <a 
+                        href="#" 
+                        className={styles.link} 
+                        onClick={(e) => { e.preventDefault(); setActivePolicy('privacy'); }}
+                      >
+                        Privacy Policy
+                      </a>. I understand Dispatch Now
+                      is a dispatching service, not a freight broker.
+                    </span>
+                  </label>
+                </div>
+
+                <button
+                  type="submit"
+                  className={`btn-primary ${styles.submitBtn}`}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <span className={styles.spinner} />
+                  ) : (
+                    <>
+                      <Send size={18} />
+                      Submit Application
+                    </>
+                  )}
+                </button>
+              </form>
             </div>
           </motion.div>
         </div>

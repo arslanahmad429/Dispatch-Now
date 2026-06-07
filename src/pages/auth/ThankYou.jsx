@@ -15,7 +15,7 @@ export default function ThankYou() {
         initial={{ scale: 0.5, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.5, type: 'spring' }}
-        style={{ display: 'inline-block', marginBottom: '20px', color: 'var(--accent-gold)' }}
+        style={{ display: 'inline-block', marginBottom: '20px', color: 'var(--accent)' }}
       >
         <CheckCircle size={64} strokeWidth={1.5} />
       </motion.div>
@@ -33,11 +33,13 @@ export default function ThankYou() {
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.3, duration: 0.5 }}
-        style={{ color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '1.05rem', marginBottom: '30px' }}
+        style={{ color: 'rgba(255,255,255,0.75)', lineHeight: '1.6', fontSize: '1.05rem', marginBottom: '30px' }}
       >
         Thank you for registering with Dispatch Now. Our compliance team has received your documents and is currently reviewing your MC/USDOT safety rating.
         <br /><br />
-        <strong>We will contact you directly through WhatsApp</strong> to confirm your equipment profile, negotiate rates, and assign your first freight loads.
+        <strong>After approval of your application, you can access your portal by logging in with your credentials.</strong>
+        <br /><br />
+        We will contact you directly through WhatsApp to confirm your equipment profile, negotiate rates, and assign your first freight loads.
       </motion.p>
 
       <motion.div
@@ -65,12 +67,29 @@ export default function ThankYou() {
         <a 
           href="tel:+1-800-DISPATCH" 
           className="btn-outline" 
-          style={{ width: '100%', justifyContent: 'center', padding: '12px' }}
+          style={{ 
+            width: '100%', 
+            justifyContent: 'center', 
+            padding: '12px',
+            color: '#ffffff',
+            borderColor: 'rgba(255, 255, 255, 0.40)',
+            background: 'rgba(255, 255, 255, 0.08)'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = 'var(--accent)';
+            e.currentTarget.style.color = 'var(--accent)';
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.40)';
+            e.currentTarget.style.color = '#ffffff';
+            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
+          }}
         >
           <PhoneCall size={16} /> Call Hotline: +1 (800) DISPATCH
         </a>
 
-        <div style={{ marginTop: '20px', borderTop: '1px solid var(--border)', paddingTop: '20px' }}>
+        <div style={{ marginTop: '20px', borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: '20px' }}>
           <Link to="/" className={styles.regLink} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
             Go Back to Homepage <ArrowRight size={14} />
           </Link>

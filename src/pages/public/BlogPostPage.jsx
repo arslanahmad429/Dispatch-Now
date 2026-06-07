@@ -135,6 +135,7 @@ export default function BlogPostPage() {
 
   return (
     <div className={styles.blogPostWrapper}>
+      <div className={styles.pageBackground} style={{ backgroundImage: `url(${post.image})` }} />
       {/* Immersive Hero Header */}
       <div className={styles.heroHeader} style={{ backgroundImage: `url(${post.image})` }}>
         <div className={styles.heroOverlay} />
@@ -175,20 +176,9 @@ export default function BlogPostPage() {
         <div className="container">
           <div className={styles.layout}>
             {/* Reading Column */}
-            <main className={styles.mainContent}>
+            <main className={styles.mainContentGlass}>
               <div className={styles.postBody}>
                 {renderContent(post.content)}
-              </div>
-
-              {/* Author Bio Card */}
-              <div className={styles.authorCard}>
-                <div className={styles.authorCardAvatar}>
-                  {post.author.charAt(0)}
-                </div>
-                <div className={styles.authorCardInfo}>
-                  <h4>About The Author: {post.author}</h4>
-                  <p>Dedicated to helping individual drivers and owner-operators navigate US logistics corridors. Specializes in rate negotiations, carrier compliance, and minimizing empty deadhead miles.</p>
-                </div>
               </div>
 
               {/* Action Footer */}
@@ -217,7 +207,7 @@ export default function BlogPostPage() {
                 <div className={styles.calloutContent}>
                   <h3>Start Hauling High-Paying Lanes</h3>
                   <p>Register as a driver today. Our manual dispatch team handles all rate negotiations and broker packets, letting you focus on the road with an 8% flat service cut.</p>
-                  <Link to="/register/carrier" className="btn-primary" style={{ background: 'var(--accent-gold)', color: '#000', marginTop: '10px' }}>
+                  <Link to="/register/carrier" className="btn-primary" style={{ background: 'var(--accent)', color: '#fff', marginTop: '10px' }}>
                     Register as Driver <ChevronRight size={16} />
                   </Link>
                 </div>

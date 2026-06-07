@@ -44,16 +44,16 @@ export default function Home() {
                 <h3>For Owner-Operators & Drivers</h3>
                 <p>Register your truck and authority documents today. Our dispatch compliance team will coordinate loads manually on premium US freight routes, negotiate rates directly on your behalf, and send bank settlement receipts within hours of BOL upload.</p>
                 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginTop: '20px', marginBottom: '25px' }}>
+                <div className={styles.bulletGrid}>
                   <ul className={styles.bulletList} style={{ margin: 0 }}>
-                    <li><CheckCircle size={14} color="var(--accent-gold)" /> Flat 8% dispatch fee</li>
-                    <li><CheckCircle size={14} color="var(--accent-gold)" /> 24/7 WhatsApp updates</li>
-                    <li><CheckCircle size={14} color="var(--accent-gold)" /> Unique plate checking</li>
+                    <li><CheckCircle size={14} color="var(--accent)" /> Flat 8% dispatch fee</li>
+                    <li><CheckCircle size={14} color="var(--accent)" /> 24/7 WhatsApp updates</li>
+                    <li><CheckCircle size={14} color="var(--accent)" /> Unique plate checking</li>
                   </ul>
                   <ul className={styles.bulletList} style={{ margin: 0 }}>
-                    <li><CheckCircle size={14} color="var(--accent-gold)" /> Rapid factoring release</li>
-                    <li><CheckCircle size={14} color="var(--accent-gold)" /> Manual rate negotiations</li>
-                    <li><CheckCircle size={14} color="var(--accent-gold)" /> Direct broker paperwork</li>
+                    <li><CheckCircle size={14} color="var(--accent)" /> Rapid factoring release</li>
+                    <li><CheckCircle size={14} color="var(--accent)" /> Manual rate negotiations</li>
+                    <li><CheckCircle size={14} color="var(--accent)" /> Direct broker paperwork</li>
                   </ul>
                 </div>
 
@@ -104,7 +104,7 @@ export default function Home() {
           <div className={styles.inputGroup} style={{ marginBottom: '30px' }}>
             <label style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.95rem', fontWeight: '600', marginBottom: '10px' }}>
               <span>Weekly Gross Billings:</span>
-              <strong style={{ color: 'var(--accent-gold)', fontSize: '1.2rem' }}>${revenue.toLocaleString()}</strong>
+              <strong style={{ color: 'var(--accent)', fontSize: '1.2rem' }}>${revenue.toLocaleString()}</strong>
             </label>
             <input 
               type="range"

@@ -10,16 +10,21 @@
   --bg-card-hover: #f1f3f6;
   --bg-surface: #e9ecef;
 
-  --accent: #C6A300; /* Rich Gold/Amber readable on Light background */
-  --accent-dim: rgba(198, 163, 0, 0.08);
-  --accent-glow: rgba(198, 163, 0, 0.2);
+  --accent: #0f5bbf; /* Brand Blue */
+  --accent-dim: rgba(15, 91, 191, 0.08);
+  --accent-glow: rgba(15, 91, 191, 0.2);
+  --accent-gold: #0f5bbf; /* Map legacy variable */
+
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 
   --text-primary: #111111;
   --text-secondary: #444444;
   --text-muted: #777777;
 
   --border: rgba(0, 0, 0, 0.06);
-  --border-accent: rgba(198, 163, 0, 0.15);
+  --border-accent: rgba(15, 91, 191, 0.15);
 
   --font-heading: 'Montserrat', sans-serif;
   --font-body: 'Open Sans', sans-serif;
@@ -32,7 +37,7 @@
   --radius-full: 9999px;
 
   --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.04);
-  --shadow-accent: 0 0 20px rgba(198, 163, 0, 0.06);
+  --shadow-accent: 0 0 20px rgba(15, 91, 191, 0.06);
 
   --transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
   --transition-slow: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -45,19 +50,24 @@
   --bg-card-hover: #151515;
   --bg-surface: #181818;
 
-  --accent: #FFD700; /* Bright gold on dark background */
-  --accent-dim: rgba(255, 215, 0, 0.1);
-  --accent-glow: rgba(255, 215, 0, 0.25);
+  --accent: #0f5bbf; /* Consistent brand blue */
+  --accent-dim: rgba(15, 91, 191, 0.1);
+  --accent-glow: rgba(15, 91, 191, 0.3);
+  --accent-gold: #0f5bbf; /* Map legacy variable */
+
+  --glass-bg: rgba(15, 15, 15, 0.45);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
 
   --text-primary: #FFFFFF;
   --text-secondary: #CCCCCC;
   --text-muted: #888888;
 
   --border: rgba(255, 255, 255, 0.05);
-  --border-accent: rgba(255, 215, 0, 0.15);
+  --border-accent: rgba(15, 91, 191, 0.3);
 
   --shadow-card: 0 4px 30px rgba(0, 0, 0, 0.7);
-  --shadow-accent: 0 0 30px rgba(255, 215, 0, 0.08);
+  --shadow-accent: 0 0 30px rgba(15, 91, 191, 0.18);
 }
 
 /* ============================================
@@ -189,7 +199,7 @@ input, textarea, select {
   gap: 10px;
   padding: 14px 32px;
   background: var(--accent);
-  color: #000;
+  color: #fff;
   font-weight: 700;
   font-size: 15px;
   border-radius: var(--radius-full);
@@ -242,7 +252,7 @@ input, textarea, select {
    GRADIENT TEXT
    ============================================ */
 .gradient-text {
-  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, #60a5fa 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

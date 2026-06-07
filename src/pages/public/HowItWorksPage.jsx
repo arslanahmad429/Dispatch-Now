@@ -1,9 +1,29 @@
 import HowItWorks from '../../components/HowItWorks/HowItWorks';
+import heroStyles from '../../styles/PageHero.module.css';
 import styles from './HowItWorksPage.module.css';
 
 export default function HowItWorksPage() {
   return (
     <div className={styles.howItWorksPage}>
+
+      {/* ── Hero Banner ── */}
+      <div className={heroStyles.pageHero}>
+        <div className={heroStyles.pageHeroBg}>
+          <img src="/media/warehouse_logistics.png" alt="Logistics warehouse operations" />
+        </div>
+        <div className={heroStyles.pageHeroOverlay} />
+        <div className={heroStyles.pageHeroContent}>
+          <span className={heroStyles.pageHeroLabel}>The Process</span>
+          <h1 className={heroStyles.pageHeroTitle}>
+            How <span>Dispatch Now</span> Works
+          </h1>
+          <p className={heroStyles.pageHeroSub}>
+            A streamlined, manual dispatch process designed for owner-operators —
+            register once, let us handle the rest while you drive.
+          </p>
+        </div>
+      </div>
+
       <HowItWorks />
 
       <section className="section" style={{ background: 'var(--bg-secondary)', borderTop: '1px solid var(--border)' }}>

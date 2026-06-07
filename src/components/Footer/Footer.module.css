@@ -47,29 +47,30 @@
   gap: 20px;
 }
 
-.logo {
+.logoLink {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 22px;
-  font-weight: 900;
-  color: var(--text-primary);
-  letter-spacing: -0.5px;
+  height: 48px;
+  width: 200px;
+  position: relative;
 }
 
-.logo span {
-  color: var(--accent);
+.logoImg {
+  height: 140px;
+  width: auto;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  object-fit: contain;
+  display: block;
+  transition: var(--transition);
+  filter: invert(1) hue-rotate(180deg) saturate(1.8) brightness(0.75); /* Invert to black in light mode */
 }
 
-.logoIcon {
-  width: 36px;
-  height: 36px;
-  background: var(--accent);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #000;
+/* In dark mode, keep the original white colors */
+:global(.dark-theme) .logoImg {
+  filter: none;
 }
 
 .brandDesc {

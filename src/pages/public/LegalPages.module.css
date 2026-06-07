@@ -1,0 +1,161 @@
+.legalPage {
+  background-color: var(--bg-primary);
+  min-height: 80vh;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 40px;
+}
+
+.meta {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+.contentWrapper {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.sidebar {
+  position: sticky;
+  top: 100px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: var(--shadow-card);
+}
+
+.sidebarTitle {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebarLink {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: var(--transition);
+  padding: 6px 0;
+  display: block;
+  cursor: pointer;
+}
+
+.sidebarLink:hover {
+  color: var(--accent);
+  transform: translateX(4px);
+}
+
+.documentCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 50px;
+  box-shadow: var(--shadow-card);
+}
+
+.docSection {
+  margin-bottom: 35px;
+}
+
+.docSection:last-child {
+  margin-bottom: 0;
+}
+
+.docSection h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sectionNumber {
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.docSection p {
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.75;
+  margin-bottom: 12px;
+}
+
+.docSection ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.docSection li {
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.6;
+  position: relative;
+  padding-left: 20px;
+}
+
+.docSection li::before {
+  content: '•';
+  color: var(--accent);
+  font-weight: bold;
+  position: absolute;
+  left: 5px;
+  top: 0;
+}
+
+.highlightBox {
+  background: var(--accent-dim);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 20px;
+  margin-top: 15px;
+  margin-bottom: 20px;
+}
+
+.highlightBox p {
+  margin-bottom: 0;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+@media (max-width: 992px) {
+  .contentWrapper {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  
+  .sidebar {
+    position: static;
+    padding: 20px;
+  }
+  
+  .documentCard {
+    padding: 30px 20px;
+  }
+}

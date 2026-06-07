@@ -1,9 +1,29 @@
 import Equipment from '../../components/Equipment/Equipment';
+import heroStyles from '../../styles/PageHero.module.css';
 import styles from './EquipmentPage.module.css';
 
 export default function EquipmentPage() {
   return (
     <div className={styles.equipmentPage}>
+
+      {/* ── Hero Banner ── */}
+      <div className={heroStyles.pageHero}>
+        <div className={heroStyles.pageHeroBg}>
+          <img src="/media/highway_truck.png" alt="Semi-truck on highway" />
+        </div>
+        <div className={heroStyles.pageHeroOverlay} />
+        <div className={heroStyles.pageHeroContent}>
+          <span className={heroStyles.pageHeroLabel}>Equipment We Dispatch</span>
+          <h1 className={heroStyles.pageHeroTitle}>
+            Every Trailer Type, <span>Every Lane</span>
+          </h1>
+          <p className={heroStyles.pageHeroSub}>
+            From dry vans and flatbeds to reefers and hotshots — we find the right loads
+            for your specific equipment on the most profitable US freight corridors.
+          </p>
+        </div>
+      </div>
+
       <Equipment />
 
       {/* Detail Specs */}

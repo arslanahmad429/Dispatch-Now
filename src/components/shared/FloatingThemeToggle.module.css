@@ -1,0 +1,52 @@
+.floatingToggle {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999999;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  
+  /* In light theme, make it solid brand blue with white icon */
+  background: var(--accent);
+  color: #ffffff;
+  border: 1px solid var(--accent);
+  box-shadow: 
+    0 10px 25px rgba(15, 91, 191, 0.35), 
+    0 0 0 1px rgba(15, 91, 191, 0.2);
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.floatingToggle:hover {
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 
+    0 14px 30px rgba(15, 91, 191, 0.45), 
+    0 0 0 1px var(--accent);
+}
+
+/* In dark theme, make it solid white with royal blue icon */
+:global(.dark-theme) .floatingToggle {
+  background: #ffffff;
+  color: var(--accent);
+  border: 1px solid #ffffff;
+  box-shadow: 
+    0 10px 25px rgba(0, 0, 0, 0.4), 
+    0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+:global(.dark-theme) .floatingToggle:hover {
+  background: #f0f2f5;
+  box-shadow: 
+    0 14px 30px rgba(255, 255, 255, 0.25), 
+    0 0 0 1px #ffffff;
+}
+
+.floatingToggle:active {
+  transform: scale(0.95) translateY(0);
+}

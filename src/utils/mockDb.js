@@ -1,130 +1,7 @@
-const INITIAL_CARRIERS = [
-  {
-    id: "CAR-9281",
-    firstName: "Marcus",
-    lastName: "Williams",
-    name: "Marcus Williams",
-    email: "carrier@dispatchnow.com",
-    phone: "(555) 987-6543",
-    mcNumber: "MC-928103",
-    dotNumber: "DOT-817293",
-    truckNumber: "TRK-9821",
-    licenseNumber: "DL-CA928103",
-    equipment: "flatbed",
-    status: "approved",
-    joinedDate: "2026-06-01"
-  },
-  {
-    id: "CAR-7193",
-    firstName: "John",
-    lastName: "Doe",
-    name: "John Doe",
-    email: "john@jdexpress.com",
-    phone: "(555) 456-7890",
-    mcNumber: "MC-719329",
-    dotNumber: "DOT-192837",
-    truckNumber: "TRK-7193",
-    licenseNumber: "DL-IL719329",
-    equipment: "dry-van",
-    status: "pending",
-    joinedDate: "2026-06-03"
-  },
-  {
-    id: "CAR-3012",
-    firstName: "Robert",
-    lastName: "Taylor",
-    name: "Robert Taylor",
-    email: "robert@titanheavy.com",
-    phone: "(555) 123-4567",
-    mcNumber: "MC-301284",
-    dotNumber: "DOT-382910",
-    truckNumber: "TRK-3012",
-    licenseNumber: "DL-TX301284",
-    equipment: "reefer",
-    status: "approved",
-    joinedDate: "2026-06-04"
-  }
-];
+const INITIAL_CARRIERS = [];
 
-const INITIAL_ORDERS = [
-  {
-    id: "ORD-9281",
-    customer: "ACME Industrial",
-    equipment: "Flatbed",
-    pickup: "Houston, TX",
-    delivery: "Denver, CO",
-    date: "2026-06-05",
-    rate: 3800,
-    status: "dispatched",
-    carrier: "Marcus Williams",
-    carrierEmail: "carrier@dispatchnow.com",
-    truckNumber: "TRK-9821",
-    dispatcher: "Sarah Mitchell",
-    weight: "42,000 lbs",
-    commodity: "Steel Pipes",
-    eta: "2026-06-06 14:00",
-    paymentStatus: "unpaid",
-    dispatchFee: 304, // 8% of 3800
-    driverPayout: 3496,
-    history: [
-      { status: "pending", time: "2026-06-03 09:00", note: "Order placed manually by admin" },
-      { status: "dispatched", time: "2026-06-03 14:00", note: "Carrier Marcus Williams accepted the dispatch" }
-    ]
-  },
-  {
-    id: "ORD-7193",
-    customer: "Apex Retail",
-    equipment: "Dry Van",
-    pickup: "Chicago, IL",
-    delivery: "Los Angeles, CA",
-    date: "2026-06-06",
-    rate: 6200,
-    status: "in-transit",
-    carrier: "John Doe",
-    carrierEmail: "john@jdexpress.com",
-    truckNumber: "TRK-7193",
-    dispatcher: "Sarah Mitchell",
-    weight: "38,500 lbs",
-    commodity: "General Merchandise",
-    eta: "2026-06-08 18:30",
-    paymentStatus: "unpaid",
-    dispatchFee: 496, // 8% of 6200
-    driverPayout: 5704,
-    history: [
-      { status: "pending", time: "2026-06-02 08:00", note: "Order placed manually by admin" },
-      { status: "dispatched", time: "2026-06-02 12:00", note: "Carrier John Doe accepted the dispatch" },
-      { status: "in-transit", time: "2026-06-03 06:00", note: "Driver loaded, in transit" }
-    ]
-  },
-  {
-    id: "ORD-4491",
-    customer: "Texaco Parts",
-    equipment: "Hotshot",
-    pickup: "Dallas, TX",
-    delivery: "Oklahoma City, OK",
-    date: "2026-06-04",
-    rate: 1050,
-    status: "delivered",
-    carrier: "Marcus Williams",
-    carrierEmail: "carrier@dispatchnow.com",
-    truckNumber: "TRK-9821",
-    dispatcher: "Sarah Mitchell",
-    weight: "8,000 lbs",
-    commodity: "Drill Pipes",
-    eta: "Delivered",
-    paymentStatus: "paid",
-    dispatchFee: 84, // 8% of 1050
-    driverPayout: 966,
-    bolUrl: "mock_bol.jpg",
-    deliveryPhotoUrl: "mock_delivered.jpg",
-    history: [
-      { status: "pending", time: "2026-06-01 10:00", note: "Order placed" },
-      { status: "dispatched", time: "2026-06-01 12:00", note: "Carrier accepted" },
-      { status: "in-transit", time: "2026-06-02 08:00", note: "In transit" },
-      { status: "delivered", time: "2026-06-02 15:30", note: "Unloaded, proof of delivery uploaded" }
-    ]
-  }
-];
+const INITIAL_ORDERS = [];
+
 
 export function getMockDb() {
   const orders = localStorage.getItem("dn_orders");
@@ -141,6 +18,46 @@ export function getMockDb() {
     orders: orders ? JSON.parse(orders) : INITIAL_ORDERS,
     carriers: carriers ? JSON.parse(carriers) : INITIAL_CARRIERS
   };
+}
+
+export function getAdminCredentials() {
+  const creds = localStorage.getItem("dn_admin_credentials");
+  if (!creds) {
+    const initial = {
+      email: "admin@dispatchnow.us",
+      password: "123@2607",
+      name: "Sarah Mitchell"
+    };
+    localStorage.setItem("dn_admin_credentials", JSON.stringify(initial));
+    return initial;
+  }
+  return JSON.parse(creds);
+}
+
+export function updateAdminCredentials(email, password) {
+  const creds = getAdminCredentials();
+  creds.email = email;
+  creds.password = password;
+  localStorage.setItem("dn_admin_credentials", JSON.stringify(creds));
+  
+  // Background API Sync
+  fetch('http://localhost:5000/api/admin/credentials', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  }).catch(() => {});
+
+  // Also sync the active user session if they are logged in as admin
+  const user = localStorage.getItem("dn_user");
+  if (user) {
+    const userData = JSON.parse(user);
+    if (userData.role === 'admin') {
+      userData.email = email;
+      localStorage.setItem("dn_user", JSON.stringify(userData));
+    }
+  }
+  
+  return { success: true };
 }
 
 export function saveMockDb(db) {
@@ -170,12 +87,6 @@ export function addCarrier(carrierData) {
     return { success: false, error: `Truck plate number "${cleanTruck}" is already registered by another driver.` };
   }
 
-  // 3. Validate MC Freight Authority Registration Uniqueness
-  const cleanMc = carrierData.mcNumber.startsWith("MC-") ? carrierData.mcNumber : `MC-${carrierData.mcNumber}`;
-  if (db.carriers.some(c => c.mcNumber.toUpperCase() === cleanMc.toUpperCase())) {
-    return { success: false, error: `Freight Authority MC number "${cleanMc}" is already registered.` };
-  }
-
   const newCarrier = {
     id: `CAR-${Math.floor(1000 + Math.random() * 9000)}`,
     firstName: carrierData.firstName,
@@ -183,29 +94,44 @@ export function addCarrier(carrierData) {
     name: `${carrierData.firstName} ${carrierData.lastName}`,
     email: emailLower,
     phone: carrierData.phone,
-    mcNumber: cleanMc,
-    dotNumber: carrierData.dotNumber ? (carrierData.dotNumber.startsWith("DOT-") ? carrierData.dotNumber : `DOT-${carrierData.dotNumber}`) : "N/A",
     truckNumber: cleanTruck,
     licenseNumber: carrierData.licenseNumber,
     equipment: carrierData.equipment,
     password: carrierData.password, // Storing password for universal mock login
     status: "pending", // Default to pending until approved by admin
+    docs: carrierData.docs || {}, // Persistent document references
     joinedDate: new Date().toISOString().substring(0, 10)
   };
 
   db.carriers.push(newCarrier);
   saveMockDb(db);
+
+  // Background API Sync
+  fetch('http://localhost:5000/api/carriers/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(carrierData)
+  }).catch(() => {});
+
   return { success: true, carrier: newCarrier };
 }
 
 // Approve or suspend a carrier
-export function updateCarrierStatus(mcNumber, status) {
+export function updateCarrierStatus(email, status) {
   const db = getMockDb();
-  const carrier = db.carriers.find(c => c.mcNumber === mcNumber);
+  const carrier = db.carriers.find(c => c.email.toLowerCase() === email.toLowerCase());
   if (!carrier) return { success: false, error: "Carrier not found" };
 
   carrier.status = status;
   saveMockDb(db);
+
+  // Background API Sync
+  fetch(`http://localhost:5000/api/carriers/${email}/status`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status })
+  }).catch(() => {});
+
   return { success: true, carrier };
 }
 
@@ -228,7 +154,7 @@ export function addOrder(orderData) {
     date: orderData.date,
     rate: rate,
     status: "dispatched",
-    carrier: carrier ? carrier.name : orderData.carrierName || "Unknown",
+    carrier: carrier ? (carrier.name || `${carrier.firstName || ''} ${carrier.lastName || ''}`.trim()) : orderData.carrierName || "Unknown",
     carrierEmail: orderData.carrierEmail.toLowerCase(),
     truckNumber: carrier ? carrier.truckNumber : "N/A",
     dispatcher: "Sarah Mitchell", // Default admin dispatcher
@@ -254,6 +180,14 @@ export function addOrder(orderData) {
 
   db.orders.unshift(newOrder);
   saveMockDb(db);
+
+  // Background API Sync
+  fetch('http://localhost:5000/api/orders', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(orderData)
+  }).catch(() => {});
+
   return { success: true, order: newOrder };
 }
 
@@ -275,6 +209,14 @@ export function updateOrderStatus(orderId, status, details = {}) {
   });
 
   saveMockDb(db);
+
+  // Background API Sync
+  fetch(`http://localhost:5000/api/orders/${orderId}/status`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status, details })
+  }).catch(() => {});
+
   return { success: true, order };
 }
 
@@ -294,5 +236,32 @@ export function updatePaymentStatus(orderId, paymentStatus) {
   });
 
   saveMockDb(db);
+
+  // Background API Sync
+  fetch(`http://localhost:5000/api/orders/${orderId}/payment`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ paymentStatus })
+  }).catch(() => {});
+
   return { success: true, order };
+}
+
+// Reset a carrier's password by truckNumber
+export function resetCarrierPassword(truckNumber, newPassword) {
+  const db = getMockDb();
+  const carrier = db.carriers.find(c => c.truckNumber && c.truckNumber.toLowerCase() === truckNumber.toLowerCase());
+  if (!carrier) return { success: false, error: "Carrier not found" };
+
+  carrier.password = newPassword;
+  saveMockDb(db);
+
+  // Background API Sync
+  fetch('http://localhost:5000/api/auth/reset-password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ truckNumber, newPassword })
+  }).catch(() => {});
+
+  return { success: true, carrier };
 }

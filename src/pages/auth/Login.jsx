@@ -1,59 +1,102 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth, getDashboardPath } from '../../context/AuthContext';
-import { Shield, Mail, Lock, ArrowRight, UserCheck } from 'lucide-react';
+import { Shield, Truck, Lock, ArrowRight } from 'lucide-react';
 import styles from './Login.module.css';
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
+  const [truckNumber, setTruckNumber] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Sanitize input helper to mitigate XSS / Script Injection
+  const sanitizeInput = (val) => {
+    if (typeof val !== 'string') return '';
+    return val
+      .replace(/[&<>"'/]/g, (match) => {
+        const entityMap = {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#x27;',
+          '/': '&#x2F;'
+        };
+        return entityMap[match];
+      })
+      .trim();
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!email || !password) {
-      setError('Please fill in all fields');
+
+    const sanitizedTruck = sanitizeInput(truckNumber);
+    const sanitizedPassword = sanitizeInput(password);
+
+    if (!sanitizedTruck || !sanitizedPassword) {
+      setError('Invalid characters detected in form inputs.');
       return;
     }
+
+    // Check brute-force lockout status
+    const lockout = Number(localStorage.getItem('dn_login_lockout') || 0);
+    if (lockout && Date.now() < lockout) {
+      const waitSecs = Math.ceil((lockout - Date.now()) / 1000);
+      setError(`Too many failed attempts. Login locked. Please try again in ${waitSecs} seconds.`);
+      return;
+    }
+
     setError('');
     setLoading(true);
 
     setTimeout(() => {
-      const res = login(email, password);
+      const res = login(sanitizedTruck, sanitizedPassword);
       setLoading(false);
+      
       if (res.success) {
+        // Reset brute-force counter on success
+        localStorage.removeItem('dn_login_fails');
+        localStorage.removeItem('dn_login_lockout');
         navigate(getDashboardPath(res.role));
       } else {
-        setError(res.error || 'Login failed');
+        // Increment brute-force fails
+        const fails = Number(localStorage.getItem('dn_login_fails') || 0) + 1;
+        localStorage.setItem('dn_login_fails', fails.toString());
+        
+        if (fails >= 5) {
+          const lockUntil = Date.now() + 60 * 1000; // 60s lockout
+          localStorage.setItem('dn_login_lockout', lockUntil.toString());
+          setError('Too many failed login attempts. Your login is locked for 60 seconds.');
+        } else {
+          const cleanErr = (res.error || 'Login failed').replace(/\.$/, '');
+          setError(`${cleanErr}. (${5 - fails} attempts remaining)`);
+        }
       }
     }, 1000);
   };
 
-  const fillDemo = (demoEmail) => {
-    setEmail(demoEmail);
-    setPassword('demo123');
-  };
+
 
   return (
     <div className={styles.loginWrapper}>
-      <h2>Log In to Platform</h2>
-      <p className={styles.subtitle}>Enter your credentials or select a demo role below to explore the platform.</p>
+      <h2>Log In</h2>
+      <p className={styles.subtitle}>Enter your registered Truck Plate No and password to access your dashboard.</p>
 
       {error && <div className={styles.errorAlert}>{error}</div>}
 
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.inputGroup}>
-          <label>Email Address</label>
+          <label>Truck Plate No</label>
           <div className={styles.inputWrapper}>
-            <Mail size={18} className={styles.inputIcon} />
+            <Truck size={18} className={styles.inputIcon} />
             <input 
-              type="email" 
-              placeholder="name@company.com" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text" 
+              placeholder="TRK-9821" 
+              value={truckNumber}
+              onChange={(e) => setTruckNumber(e.target.value)}
               required
             />
           </div>
@@ -81,21 +124,7 @@ export default function Login() {
         </button>
       </form>
 
-      {/* Demo Users Section */}
-      <div className={styles.demoSection}>
-        <div className={styles.demoTitle}>
-          <UserCheck size={14} />
-          <span>Quick Demo Access (Click to auto-fill)</span>
-        </div>
-        <div className={styles.demoChips}>
-          <button onClick={() => fillDemo('carrier@dispatchnow.com')} className={styles.demoChip}>
-            <span>Driver / Carrier</span>
-          </button>
-          <button onClick={() => fillDemo('admin@dispatchnow.com')} className={styles.demoChip}>
-            <span>Administrator</span>
-          </button>
-        </div>
-      </div>
+
 
       <div className={styles.registerPrompt}>
         <p>Don't have an account? <Link to="/register/carrier" className={styles.regLink}>Register as Driver</Link></p>

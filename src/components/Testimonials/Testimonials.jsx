@@ -128,7 +128,7 @@ export default function Testimonials() {
                 </div>
                 <div className={styles.stars}>
                   {Array.from({ length: t.rating }).map((_, i) => (
-                    <Star key={i} size={18} fill="#FFD700" color="#FFD700" />
+                    <Star key={i} size={18} fill="var(--accent)" color="var(--accent)" />
                   ))}
                 </div>
                 <p className={styles.text}>{t.text}</p>

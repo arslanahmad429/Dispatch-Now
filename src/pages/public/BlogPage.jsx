@@ -10,6 +10,7 @@ export default function BlogPage() {
 
   return (
     <div className={styles.blogContainer}>
+      <div className={styles.bgBlurImage} style={{ backgroundImage: 'url(/media/highway_truck.png)' }} />
       {/* Blog Page Header */}
       <section className={styles.blogHeader}>
         <div className="container">

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Check, Info } from 'lucide-react';
+import heroStyles from '../../styles/PageHero.module.css';
 import styles from './PricingPage.module.css';
 
 export default function PricingPage() {
@@ -11,6 +12,25 @@ export default function PricingPage() {
 
   return (
     <div className={styles.pricingPage}>
+
+      {/* ── Hero Banner ── */}
+      <div className={heroStyles.pageHero}>
+        <div className={heroStyles.pageHeroBg}>
+          <video src="/media/carrier_transit.mp4" autoPlay loop muted playsInline />
+        </div>
+        <div className={heroStyles.pageHeroOverlay} />
+        <div className={heroStyles.pageHeroContent}>
+          <span className={heroStyles.pageHeroLabel}>Transparent Pricing</span>
+          <h1 className={heroStyles.pageHeroTitle}>
+            Flat Rate Dispatch. <span>No Load, No Fee.</span>
+          </h1>
+          <p className={heroStyles.pageHeroSub}>
+            We only earn when you haul. One flat 8% fee per load —
+            no sign-up deposits, no locked contracts, cancel any time.
+          </p>
+        </div>
+      </div>
+
       <section className="section">
         <div className="container">
           <div className={styles.header}>
@@ -34,8 +54,8 @@ export default function PricingPage() {
                 display: 'flex', 
                 gap: '10px', 
                 padding: '16px', 
-                background: 'rgba(255, 215, 0, 0.05)', 
-                border: '1px solid rgba(255, 215, 0, 0.1)', 
+                background: 'var(--accent-dim)', 
+                border: '1px solid var(--border-accent)', 
                 borderRadius: '8px',
                 fontSize: '0.85rem',
                 color: 'var(--text-secondary)',
@@ -43,25 +63,25 @@ export default function PricingPage() {
                 marginBottom: '20px',
                 textAlign: 'left'
               }}>
-                <Info size={18} style={{ color: 'var(--accent-gold)', flexShrink: 0, marginTop: '2px' }} />
+                <Info size={18} style={{ color: 'var(--accent)', flexShrink: 0, marginTop: '2px' }} />
                 <div>
                   <strong>Individual Registry Policy:</strong> Fleet accounts are not supported. There is no concept of bulk fleet registration. Every driver must register himself along with his specific truck or vehicle. If a carrier has multiple trucks, each vehicle must be registered under its own unique driver profile to maintain DOT plate uniqueness integrity.
                 </div>
               </div>
 
               <ul className={styles.features}>
-                <li><Check size={16} color="var(--accent-gold)" /> Dedicated manual dispatcher negotiator</li>
-                <li><Check size={16} color="var(--accent-gold)" /> Unlimited spot loads scoured per week</li>
-                <li><Check size={16} color="var(--accent-gold)" /> 5-Document compliance filing checks</li>
-                <li><Check size={16} color="var(--accent-gold)" /> Real-time broker credit score auditing</li>
-                <li><Check size={16} color="var(--accent-gold)" /> Instant factoring paperwork setups</li>
-                <li><Check size={16} color="var(--accent-gold)" /> 24/7 WhatsApp emergency dispatcher updates</li>
+                <li><Check size={16} color="var(--accent)" /> Dedicated manual dispatcher negotiator</li>
+                <li><Check size={16} color="var(--accent)" /> Unlimited spot loads scoured per week</li>
+                <li><Check size={16} color="var(--accent)" /> 5-Document compliance filing checks</li>
+                <li><Check size={16} color="var(--accent)" /> Real-time broker credit score auditing</li>
+                <li><Check size={16} color="var(--accent)" /> Instant factoring paperwork setups</li>
+                <li><Check size={16} color="var(--accent)" /> 24/7 WhatsApp emergency dispatcher updates</li>
               </ul>
               
               <Link 
                 to="/register/carrier" 
                 className="btn-primary" 
-                style={{ width: '100%', justifyContent: 'center', marginTop: '20px', background: 'var(--accent-gold)', color: '#000' }}
+                style={{ width: '100%', justifyContent: 'center', marginTop: '20px', background: 'var(--accent)', color: '#fff' }}
               >
                 Apply as Driver <ArrowRight size={16} />
               </Link>
@@ -79,7 +99,7 @@ export default function PricingPage() {
             }}>
               <h3 style={{ fontSize: '1.35rem', fontWeight: '700', marginBottom: '12px' }}>Compliance Onboarding Checks</h3>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '24px' }}>
-                To safeguard the integrity of our dispatch network and ensure eligibility with top US freight brokers, every driver must upload the following <strong>5 compliance documents</strong> during registration. We enforce strict uniqueness checks on license plates and MC numbers.
+                To safeguard the integrity of our dispatch network and ensure eligibility with top US freight brokers, every driver must upload the following <strong>5 compliance documents</strong> during registration. We enforce strict uniqueness checks on license plates.
               </p>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '12px' }}>
@@ -102,8 +122,8 @@ export default function PricingPage() {
                       width: '24px',
                       height: '24px',
                       borderRadius: '50%',
-                      background: 'rgba(255, 215, 0, 0.1)',
-                      color: 'var(--accent-gold)',
+                      background: 'var(--accent-dim)',
+                      color: 'var(--accent)',
                       fontSize: '11px',
                       fontWeight: 'bold',
                       alignItems: 'center',
@@ -131,7 +151,7 @@ export default function PricingPage() {
               <div className={styles.inputGroup} style={{ marginTop: '30px' }}>
                 <label style={{ display: 'flex', justifyContent: 'space-between', fontWeight: '600' }}>
                   <span>Weekly Gross Billings:</span>
-                  <strong style={{ color: 'var(--accent-gold)', fontSize: '1.15rem' }}>${revenue.toLocaleString()}</strong>
+                  <strong style={{ color: 'var(--accent)', fontSize: '1.15rem' }}>${revenue.toLocaleString()}</strong>
                 </label>
                 <input 
                   type="range" 

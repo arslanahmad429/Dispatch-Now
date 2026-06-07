@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { getCarriers, updateCarrierStatus, getMockDb } from '../../utils/mockDb';
 import DataTable from '../../components/shared/DataTable';
 import StatusBadge from '../../components/shared/StatusBadge';
-import { Check, X, Mail, Phone, Calendar, Search, RefreshCw } from 'lucide-react';
+import { Check, X, Mail, Phone, Calendar, Search, RefreshCw, Eye } from 'lucide-react';
 import styles from './CarriersList.module.css';
 
 export default function CarriersList() {
   const [carriers, setCarriers] = useState([]);
+  const [selectedCarrier, setSelectedCarrier] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
   const [filters, setFilters] = useState({
     name: '',
     phone: '',
@@ -20,14 +22,18 @@ export default function CarriersList() {
     setCarriers(getCarriers());
   }, []);
 
-  const toggleApproval = (mcNumber) => {
+  const toggleApproval = (email) => {
     const db = getMockDb();
-    const carrier = db.carriers.find(c => c.mcNumber === mcNumber);
+    const carrier = db.carriers.find(c => c.email.toLowerCase() === email.toLowerCase());
     if (carrier) {
-      const nextStatus = carrier.status === 'approved' ? 'pending' : 'approved';
-      updateCarrierStatus(mcNumber, nextStatus);
+      const nextStatus = carrier.status === 'approved' ? 'suspended' : 'approved';
+      updateCarrierStatus(email, nextStatus);
       // Refresh local state list
       setCarriers(getCarriers());
+      // Sync modal if active
+      if (selectedCarrier && selectedCarrier.email.toLowerCase() === email.toLowerCase()) {
+        setSelectedCarrier({ ...carrier, status: nextStatus });
+      }
     }
   };
 
@@ -70,12 +76,7 @@ export default function CarriersList() {
         </div>
       </div>
     )},
-    { key: 'mcNumber', label: 'Authority Codes', render: (_, row) => (
-      <div style={{ fontSize: '0.9rem' }}>
-        <div>MC: <strong>{row.mcNumber}</strong></div>
-        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>USDOT: {row.dotNumber}</div>
-      </div>
-    )},
+
     { key: 'truckNumber', label: 'Truck / License', render: (_, row) => (
       <div style={{ fontSize: '0.9rem' }}>
         <div>Truck: <strong>{row.truckNumber}</strong></div>
@@ -88,13 +89,21 @@ export default function CarriersList() {
 
     { key: 'status', label: 'Compliance', render: (val) => <StatusBadge status={val} /> },
     { key: 'actions', label: 'Actions', render: (_, row) => (
-      <button 
-        className={row.status === 'approved' ? styles.suspendBtn : styles.approveBtn}
-        onClick={() => toggleApproval(row.mcNumber)}
-      >
-        {row.status === 'approved' ? <X size={12} /> : <Check size={12} />}
-        {row.status === 'approved' ? "Suspend" : "Approve"}
-      </button>
+      <div style={{ display: 'flex', gap: '8px' }}>
+        <button 
+          className={row.status === 'approved' ? styles.suspendBtn : styles.approveBtn}
+          onClick={() => toggleApproval(row.email)}
+        >
+          {row.status === 'approved' ? <X size={12} /> : <Check size={12} />}
+          {row.status === 'approved' ? "Suspend" : "Approve"}
+        </button>
+        <button 
+          className={styles.viewDocsBtn}
+          onClick={() => { setSelectedCarrier(row); setModalOpen(true); }}
+        >
+          <Eye size={12} /> View Docs
+        </button>
+      </div>
     )}
   ];
 
@@ -158,6 +167,56 @@ export default function CarriersList() {
       <div className={styles.card}>
         <DataTable columns={columns} data={filteredCarriers} emptyText="No carriers match the specified filters." />
       </div>
+
+      {modalOpen && selectedCarrier && (
+        <div className={styles.modalOverlay} onClick={() => setModalOpen(false)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <h3>Carrier Compliance Documents</h3>
+              <button className={styles.closeBtn} onClick={() => setModalOpen(false)}>
+                <X size={18} />
+              </button>
+            </div>
+            <div style={{ marginBottom: '16px' }}>
+              <strong style={{ fontSize: '14px', color: 'var(--text-primary)' }}>Driver: {selectedCarrier.name}</strong>
+              <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px' }}>
+                Truck Number: {selectedCarrier.truckNumber} | CDL: {selectedCarrier.licenseNumber}
+              </div>
+            </div>
+            <div className={styles.docList}>
+              {[
+                { label: 'Driver License', key: 'license' },
+                { label: 'Vehicle Registration', key: 'registration' },
+                { label: 'Truck Photo', key: 'truckPhoto' },
+                { label: 'Driver Photo', key: 'driverPhoto' },
+                { label: 'National ID Card', key: 'nationalId' }
+              ].map((doc) => {
+                const filename = selectedCarrier.docs?.[doc.key];
+                return (
+                  <div key={doc.key} className={styles.docItem}>
+                    <div className={styles.docInfo}>
+                      <h5>{doc.label}</h5>
+                      <p>{filename || 'No document uploaded'}</p>
+                    </div>
+                    {filename ? (
+                      <a 
+                        href={`http://localhost:5000/api/documents/${filename}`}
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className={styles.docLink}
+                      >
+                        <Eye size={12} /> View File
+                      </a>
+                    ) : (
+                      <span className={styles.noDoc}>Not Uploaded</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

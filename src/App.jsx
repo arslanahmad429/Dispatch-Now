@@ -1,8 +1,10 @@
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ProtectedRoute } from './components/shared/ProtectedRoute';
 import ScrollToTop from './components/shared/ScrollToTop';
+import FloatingThemeToggle from './components/shared/FloatingThemeToggle';
 
 // Layouts
 import PublicLayout from './components/layout/PublicLayout';
@@ -19,6 +21,8 @@ import AboutPage from './pages/public/AboutPage';
 import ContactPage from './pages/public/ContactPage';
 import BlogPage from './pages/public/BlogPage';
 import BlogPostPage from './pages/public/BlogPostPage';
+import PrivacyPolicy from './pages/public/PrivacyPolicy';
+import TermsOfService from './pages/public/TermsOfService';
 
 // Auth Pages
 import Login from './pages/auth/Login';
@@ -39,15 +43,65 @@ import AddOrder from './pages/admin/AddOrder';
 import AllOrders from './pages/admin/AllOrders';
 import CarriersList from './pages/admin/CarriersList';
 import AdminPayments from './pages/admin/AdminPayments';
+import AdminSettings from './pages/admin/AdminSettings';
 
 import './styles/global.css';
 
 function App() {
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('clear_db') === 'true') {
+      localStorage.removeItem('dn_orders');
+      localStorage.removeItem('dn_carriers');
+      localStorage.removeItem('dn_admin_credentials');
+      localStorage.removeItem('dn_user');
+      localStorage.removeItem('dn_login_lockout');
+      localStorage.removeItem('dn_login_fails');
+      
+      // Sync DB reset to Node.js backend
+      fetch('http://localhost:5000/api/reset', { method: 'POST' }).catch(() => {});
+      
+      alert('Mock database wiped successfully! Ready for clean testing.');
+      window.location.href = window.location.origin + window.location.pathname;
+    } else {
+      // Fetch latest orders & carriers from Node.js backend if active on bootup
+      const syncDatabaseWithBackend = async () => {
+        try {
+          const [ordersRes, carriersRes, adminRes] = await Promise.all([
+            fetch('http://localhost:5000/api/orders'),
+            fetch('http://localhost:5000/api/carriers'),
+            fetch('http://localhost:5000/api/admin/credentials')
+          ]);
+          if (ordersRes.ok && carriersRes.ok) {
+            const orders = await ordersRes.json();
+            const carriers = await carriersRes.json();
+            localStorage.setItem('dn_orders', JSON.stringify(orders));
+            localStorage.setItem('dn_carriers', JSON.stringify(carriers));
+          }
+          if (adminRes.ok) {
+            const admin = await adminRes.json();
+            // Sync admin email locally
+            const saved = localStorage.getItem('dn_admin_credentials');
+            if (saved) {
+              const parsed = JSON.parse(saved);
+              parsed.email = admin.email;
+              localStorage.setItem('dn_admin_credentials', JSON.stringify(parsed));
+            }
+          }
+        } catch (err) {
+          console.warn('[SYNC] Backend server offline. Defaulting to local storage mode.');
+        }
+      };
+      syncDatabaseWithBackend();
+    }
+  }, []);
+
   return (
     <ThemeProvider>
       <AuthProvider>
         <BrowserRouter>
           <ScrollToTop />
+          <FloatingThemeToggle />
           <Routes>
             {/* Public Routes */}
             <Route element={<PublicLayout />}>
@@ -60,6 +114,8 @@ function App() {
               <Route path="/blog/:id" element={<BlogPostPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/contact" element={<ContactPage />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
             </Route>
 
             {/* Auth Routes */}
@@ -96,6 +152,7 @@ function App() {
               <Route path="orders" element={<AllOrders />} />
               <Route path="carriers" element={<CarriersList />} />
               <Route path="payments" element={<AdminPayments />} />
+              <Route path="settings" element={<AdminSettings />} />
             </Route>
 
             {/* Fallback */}

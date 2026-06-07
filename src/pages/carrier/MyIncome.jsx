@@ -22,7 +22,7 @@ export default function MyIncome() {
     
     // Find delivered loads assigned to this logged-in carrier email
     const myCompleted = db.orders.filter(
-      o => o.carrierEmail.toLowerCase() === user.email.toLowerCase() && o.status === 'delivered'
+      o => o.carrierEmail && user.email && o.carrierEmail.toLowerCase() === user.email.toLowerCase() && o.status === 'delivered'
     );
     setCompletedOrders(myCompleted);
 

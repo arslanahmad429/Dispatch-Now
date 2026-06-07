@@ -1,9 +1,29 @@
 import styles from './AboutPage.module.css';
+import heroStyles from '../../styles/PageHero.module.css';
 import { Target, Users, Award, ShieldCheck } from 'lucide-react';
 
 export default function AboutPage() {
   return (
     <div className={styles.aboutPage}>
+
+      {/* ── Hero Banner ── */}
+      <div className={heroStyles.pageHero}>
+        <div className={heroStyles.pageHeroBg}>
+          <img src="/media/highway_truck.png" alt="Trucking on the highway" />
+        </div>
+        <div className={heroStyles.pageHeroOverlay} />
+        <div className={heroStyles.pageHeroContent}>
+          <span className={heroStyles.pageHeroLabel}>Our Story</span>
+          <h1 className={heroStyles.pageHeroTitle}>
+            We Keep the <span>Nation Moving</span>
+          </h1>
+          <p className={heroStyles.pageHeroSub}>
+            Founded with a single mission: to empower owner-operators with premium,
+            stress-free dispatching and logistics management across all 48 states.
+          </p>
+        </div>
+      </div>
+
       <section className="section">
         <div className="container">
           <div className={styles.header}>
