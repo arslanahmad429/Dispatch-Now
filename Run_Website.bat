@@ -13,7 +13,7 @@ echo.
 where node >nul 2>nul
 if %errorlevel% neq 0 (
     echo [ERROR] Node.js is not installed or not in your PATH.
-    echo Please install Node.js (LTS version recommended) from: https://nodejs.org/
+    echo Please install Node.js [LTS version recommended] from: https://nodejs.org/
     echo Once installed, restart your command prompt/terminal and run this script again.
     echo.
     pause
@@ -24,7 +24,7 @@ echo [OK] Node.js detected.
 :: 2. Check if npm is installed
 where npm >nul 2>nul
 if %errorlevel% neq 0 (
-    echo [ERROR] npm (Node Package Manager) was not found.
+    echo [ERROR] npm [Node Package Manager] was not found.
     echo Please ensure npm is installed along with Node.js.
     echo.
     pause
