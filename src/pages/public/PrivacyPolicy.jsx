@@ -1,3 +1,4 @@
+import { CONTACT_INFO } from '../../config';
 import styles from './LegalPages.module.css';
 
 export default function PrivacyPolicy() {
@@ -113,7 +114,7 @@ export default function PrivacyPolicy() {
                   <li>Download your dispatch log histories containing gross load values, factoring sheets, and broker contacts.</li>
                 </ul>
                 <p>
-                  If you have questions about document security or would like to completely reset your local credentials, please reach out to our support staff at <a href="mailto:dispatch@dispatchnow.com" className="highlight">dispatch@dispatchnow.com</a>.
+                  If you have questions about document security or would like to completely reset your local credentials, please reach out to our support staff at <a href={`mailto:${CONTACT_INFO.email}`} className="highlight">{CONTACT_INFO.email}</a>.
                 </p>
               </div>
             </div>

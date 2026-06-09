@@ -172,7 +172,7 @@ export default function CarrierRegister() {
     };
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+    const phoneRegex = /^\+?[0-9\s.-]{7,15}$/;
 
     if (!sanitizedData.firstName || sanitizedData.firstName.length < 2) {
       setError('First name must be at least 2 characters');
@@ -187,7 +187,7 @@ export default function CarrierRegister() {
       return;
     }
     if (!phoneRegex.test(sanitizedData.phone)) {
-      setError('Please enter a valid 10-digit US phone number, e.g. (555) 123-4567');
+      setError('Please enter a valid phone number (7 to 15 digits)');
       return;
     }
     if (!sanitizedData.truckNumber || sanitizedData.truckNumber.length < 3) {

@@ -1,3 +1,4 @@
+import { CONTACT_INFO } from '../../config';
 import styles from './LegalPages.module.css';
 
 export default function TermsOfService() {
@@ -164,7 +165,7 @@ export default function TermsOfService() {
                   <li>Engages in conduct deemed harmful to broker or shipper relationships managed by Dispatch Now.</li>
                 </ul>
                 <p>
-                  For termination requests, account appeals, or questions about these terms, contact us at <a href="mailto:dispatch@dispatchnow.com" className="highlight">dispatch@dispatchnow.com</a>.
+                  For termination requests, account appeals, or questions about these terms, contact us at <a href={`mailto:${CONTACT_INFO.email}`} className="highlight">{CONTACT_INFO.email}</a>.
                 </p>
               </div>
             </div>

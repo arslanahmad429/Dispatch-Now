@@ -4,7 +4,7 @@ import { Send, CheckCircle, Phone, Mail, MapPin, Truck, Lock, ArrowRight, Upload
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Drawer from '../shared/Drawer';
-import { getApiUrl } from '../../config';
+import { getApiUrl, CONTACT_INFO } from '../../config';
 import styles from './ContactForm.module.css';
 
 const equipmentOptions = [
@@ -192,7 +192,7 @@ export default function ContactForm() {
     };
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+    const phoneRegex = /^\+?[0-9\s.-]{7,15}$/;
 
     if (!sanitizedData.firstName || sanitizedData.firstName.length < 2) {
       setError('First name must be at least 2 characters');
@@ -207,7 +207,7 @@ export default function ContactForm() {
       return;
     }
     if (!phoneRegex.test(sanitizedData.phone)) {
-      setError('Please enter a valid 10-digit US phone number, e.g. (555) 123-4567');
+      setError('Please enter a valid phone number (7 to 15 digits)');
       return;
     }
     if (!sanitizedData.truckNumber || sanitizedData.truckNumber.length < 3) {
@@ -285,15 +285,15 @@ export default function ContactForm() {
                 <div className={styles.contactIcon}><Phone size={20} /></div>
                 <div>
                   <div className={styles.contactLabel}>Phone</div>
-                  <a href="tel:+18005555555" className={styles.contactValue}>+1 (800) 555-5555</a>
+                  <a href={CONTACT_INFO.whatsappUrl} target="_blank" rel="noopener noreferrer" className={styles.contactValue}>{CONTACT_INFO.formattedPhone}</a>
                 </div>
               </div>
               <div className={styles.contactItem}>
                 <div className={styles.contactIcon}><Mail size={20} /></div>
                 <div>
                   <div className={styles.contactLabel}>Email</div>
-                  <a href="mailto:dispatch@dispatchnow.com" className={styles.contactValue}>
-                    dispatch@dispatchnow.com
+                  <a href={`mailto:${CONTACT_INFO.email}`} className={styles.contactValue}>
+                    {CONTACT_INFO.email}
                   </a>
                 </div>
               </div>

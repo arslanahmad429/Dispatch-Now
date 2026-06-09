@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Truck, Phone, Mail, MapPin, Globe, Link2, MessageCircle, AtSign, ArrowRight } from 'lucide-react';
+import { CONTACT_INFO } from '../../config';
 import styles from './Footer.module.css';
 
 const quickLinks = [
@@ -22,8 +23,8 @@ const services = [
 
 const socials = [
   { icon: <Globe size={18} />, href: '/', label: 'Website' },
-  { icon: <MessageCircle size={18} />, href: 'https://wa.me/18005550199', label: 'WhatsApp' },
-  { icon: <AtSign size={18} />, href: 'mailto:dispatch@dispatchnow.com', label: 'Email' },
+  { icon: <MessageCircle size={18} />, href: CONTACT_INFO.whatsappUrl, label: 'WhatsApp' },
+  { icon: <AtSign size={18} />, href: `mailto:${CONTACT_INFO.email}`, label: 'Email' },
   { icon: <Link2 size={18} />, href: 'https://www.linkedin.com', label: 'LinkedIn' },
 ];
 
@@ -104,11 +105,11 @@ export default function Footer() {
               <div className={styles.contactList}>
                 <div className={styles.contactItem}>
                   <Phone size={16} />
-                  <a href="tel:+18005555555">+1 (800) 555-5555</a>
+                  <a href={CONTACT_INFO.whatsappUrl} target="_blank" rel="noopener noreferrer">{CONTACT_INFO.formattedPhone}</a>
                 </div>
                 <div className={styles.contactItem}>
                   <Mail size={16} />
-                  <a href="mailto:dispatch@dispatchnow.com">dispatch@dispatchnow.com</a>
+                  <a href={`mailto:${CONTACT_INFO.email}`}>{CONTACT_INFO.email}</a>
                 </div>
                 <div className={styles.contactItem}>
                   <MapPin size={16} />

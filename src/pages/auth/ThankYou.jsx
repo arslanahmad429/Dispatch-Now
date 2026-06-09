@@ -1,12 +1,13 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { CheckCircle, MessageSquare, ArrowRight, PhoneCall } from 'lucide-react';
+import { CONTACT_INFO } from '../../config';
 import styles from './Login.module.css'; // Reusing wrapper styles
 
 export default function ThankYou() {
   const handleWhatsAppChat = () => {
     // Open a mock/direct WhatsApp chat link
-    window.open('https://wa.me/18005550199?text=Hello,%20I%20just%20registered%20as%20a%20driver%20on%20DispatchNow!%20Please%20verify%20my%20MC%20authority.', '_blank');
+    window.open(`${CONTACT_INFO.whatsappUrl}?text=Hello,%20I%20just%20registered%20as%20a%20driver%20on%20DispatchNow!%20Please%20verify%20my%20application.`, '_blank');
   };
 
   return (
@@ -65,7 +66,9 @@ export default function ThankYou() {
         </button>
 
         <a 
-          href="tel:+1-800-DISPATCH" 
+          href={CONTACT_INFO.whatsappUrl} 
+          target="_blank"
+          rel="noopener noreferrer"
           className="btn-outline" 
           style={{ 
             width: '100%', 
@@ -86,7 +89,7 @@ export default function ThankYou() {
             e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
           }}
         >
-          <PhoneCall size={16} /> Call Hotline: +1 (800) DISPATCH
+          <PhoneCall size={16} /> WhatsApp Hotline: {CONTACT_INFO.formattedPhone}
         </a>
 
         <div style={{ marginTop: '20px', borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: '20px' }}>

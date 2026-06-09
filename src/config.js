@@ -18,3 +18,21 @@ export const getApiUrl = (path = '') => {
   
   return `${cleanBase}/${cleanPath}`;
 };
+
+/**
+ * Centralized Contact Information
+ * Modifying any value here updates it automatically across the entire website.
+ */
+export const CONTACT_INFO = {
+  // Raw phone number (numeric)
+  phone: '03036405094',
+  
+  // Formatted phone number for visual display
+  formattedPhone: '0303-6405094',
+  
+  // Primary email address
+  email: 'dispatch@dispatchnow.com',
+  
+  // WhatsApp Link (International format: Pakistan country code 92 + 3036405094)
+  whatsappUrl: 'https://wa.me/923036405094'
+};

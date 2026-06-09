@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { getMockDb, updateOrderStatus } from '../../utils/mockDb';
 import StatusBadge from '../../components/shared/StatusBadge';
 import { MapPin, Truck, Phone, MessageSquare, UploadCloud, CheckCircle, Navigation } from 'lucide-react';
+import { CONTACT_INFO } from '../../config';
 import styles from './ActiveLoad.module.css';
 
 export default function ActiveLoad() {
@@ -126,8 +127,8 @@ export default function ActiveLoad() {
               </div>
             </div>
             <div className={styles.contactActions}>
-              <a href="tel:+18005555555" className={styles.contactBtn}>
-                <Phone size={16} /> Call Dispatcher
+              <a href={CONTACT_INFO.whatsappUrl} target="_blank" rel="noopener noreferrer" className={styles.contactBtn}>
+                <Phone size={16} /> Chat Dispatcher
               </a>
               <button className={styles.contactBtn} onClick={() => alert("Message chat mockup placeholder.")}>
                 <MessageSquare size={16} /> Live Chat

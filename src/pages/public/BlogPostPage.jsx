@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Clock, User, Calendar, Share2, MessageCircle, ChevronRight, Bookmark } from 'lucide-react';
 import { BLOG_POSTS } from '../../utils/blogData';
+import { CONTACT_INFO } from '../../config';
 import styles from './BlogPostPage.module.css';
 
 export default function BlogPostPage() {
@@ -190,7 +191,7 @@ export default function BlogPostPage() {
                       <Share2 size={16} /> {copied ? 'Link Copied!' : 'Copy Link'}
                     </button>
                     <a 
-                      href="https://wa.me/18005550199" 
+                      href={CONTACT_INFO.whatsappUrl} 
                       target="_blank" 
                       rel="noopener noreferrer" 
                       className={styles.whatsAppBtn}
