@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Deployment & Build files
+deployment_guide.md
+server.zip
