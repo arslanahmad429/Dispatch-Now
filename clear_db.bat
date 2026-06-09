@@ -7,10 +7,8 @@ echo.
 echo Sending command to wipe all local mock databases...
 echo.
 
-:: Try launching the clear command on standard local ports
-start http://localhost:3000/?clear_db=true
+:: Launch the clear command on the active local port (5173)
 start http://localhost:5173/?clear_db=true
-start http://localhost:8000/?clear_db=true
 
 echo.
 echo Database clearing request sent!
