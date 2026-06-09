@@ -32,6 +32,12 @@ app.use(cors());
 // Parse JSON request bodies
 app.use(express.json());
 
+// Serve static files from React build directory if it exists
+const DIST_DIR = path.join(__dirname, 'dist');
+if (fs.existsSync(DIST_DIR)) {
+  app.use(express.static(DIST_DIR));
+}
+
 // 1. Safe Uploads Setup
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
 if (!fs.existsSync(UPLOADS_DIR)) {
@@ -85,20 +91,6 @@ const verifyMagicBytes = (filePath) => {
 };
 
 // --- API Endpoints ---
-
-// Root welcome message for browser visits
-app.get('/', (req, res) => {
-  res.send(`
-    <div style="font-family: sans-serif; text-align: center; background: #0a0a0a; color: #ffffff; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; box-sizing: border-box; border-top: 4px solid #0f5bbf;">
-      <h1 style="color: #0f5bbf; font-size: 32px; font-weight: 800; margin: 0 0 12px 0; letter-spacing: -0.5px;">DISPATCH NOW</h1>
-      <p style="color: #888888; font-size: 16px; margin: 0 0 24px 0; max-width: 480px; line-height: 1.5;">The secure API and database server is active and running successfully in integration mode.</p>
-      <div style="padding: 12px 24px; background: #111111; border: 1px solid #222222; border-radius: 8px; font-family: monospace; font-size: 14px; color: #22c55e;">
-        ● API Status: ONLINE (Port 5000)
-      </div>
-      <p style="color: #555555; font-size: 12px; margin-top: 32px;">Please access your driver/admin dashboard via the React port (3000 or 5173).</p>
-    </div>
-  `);
-});
 
 // Check server status
 app.get('/api/status', (req, res) => {
@@ -293,6 +285,28 @@ app.use('/uploads', (req, res, next) => {
   res.setHeader('Content-Security-Policy', "default-src 'none'; sandbox;");
   next();
 }, express.static(UPLOADS_DIR));
+
+// Fallback for React routing (Single Page Application)
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+    return next();
+  }
+  const indexFile = path.join(DIST_DIR, 'index.html');
+  if (fs.existsSync(indexFile)) {
+    res.sendFile(indexFile);
+  } else {
+    res.send(`
+      <div style="font-family: sans-serif; text-align: center; background: #0a0a0a; color: #ffffff; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0; box-sizing: border-box; border-top: 4px solid #0f5bbf;">
+        <h1 style="color: #0f5bbf; font-size: 32px; font-weight: 800; margin: 0 0 12px 0; letter-spacing: -0.5px;">DISPATCH NOW</h1>
+        <p style="color: #888888; font-size: 16px; margin: 0 0 24px 0; max-width: 480px; line-height: 1.5;">The secure API and database server is active and running successfully in integration mode.</p>
+        <div style="padding: 12px 24px; background: #111111; border: 1px solid #222222; border-radius: 8px; font-family: monospace; font-size: 14px; color: #22c55e;">
+          ● API Status: ONLINE (Port ${PORT})
+        </div>
+        <p style="color: #555555; font-size: 12px; margin-top: 32px;">Please access your driver/admin dashboard via the React port (3000 or 5173).</p>
+      </div>
+    `);
+  }
+});
 
 // Error handler
 app.use((err, req, res, next) => {

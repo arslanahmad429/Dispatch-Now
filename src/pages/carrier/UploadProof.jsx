@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { getMockDb, updateOrderStatus } from '../../utils/mockDb';
 import { FileText, Image, UploadCloud, CheckCircle, ArrowLeft, Truck } from 'lucide-react';
+import { getApiUrl } from '../../config';
 import styles from './UploadProof.module.css';
 
 export default function UploadProof() {
@@ -108,7 +109,7 @@ export default function UploadProof() {
 
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/upload', {
+      const response = await fetch(getApiUrl('/api/upload'), {
         method: 'POST',
         body: formData
       });

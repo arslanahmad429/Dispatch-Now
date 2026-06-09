@@ -3,6 +3,7 @@ import { getCarriers, updateCarrierStatus, getMockDb } from '../../utils/mockDb'
 import DataTable from '../../components/shared/DataTable';
 import StatusBadge from '../../components/shared/StatusBadge';
 import { Check, X, Mail, Phone, Calendar, Search, RefreshCw, Eye } from 'lucide-react';
+import { getApiUrl } from '../../config';
 import styles from './CarriersList.module.css';
 
 export default function CarriersList() {
@@ -200,7 +201,7 @@ export default function CarriersList() {
                     </div>
                     {filename ? (
                       <a 
-                        href={`http://localhost:5000/api/documents/${filename}`}
+                        href={getApiUrl(`/api/documents/${filename}`)}
                         target="_blank" 
                         rel="noopener noreferrer" 
                         className={styles.docLink}

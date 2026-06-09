@@ -1,3 +1,5 @@
+import { getApiUrl } from '../config';
+
 const INITIAL_CARRIERS = [];
 
 const INITIAL_ORDERS = [];
@@ -41,7 +43,7 @@ export function updateAdminCredentials(email, password) {
   localStorage.setItem("dn_admin_credentials", JSON.stringify(creds));
   
   // Background API Sync
-  fetch('http://localhost:5000/api/admin/credentials', {
+  fetch(getApiUrl('/api/admin/credentials'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password })
@@ -107,7 +109,7 @@ export function addCarrier(carrierData) {
   saveMockDb(db);
 
   // Background API Sync
-  fetch('http://localhost:5000/api/carriers/register', {
+  fetch(getApiUrl('/api/carriers/register'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(carrierData)
@@ -126,7 +128,7 @@ export function updateCarrierStatus(email, status) {
   saveMockDb(db);
 
   // Background API Sync
-  fetch(`http://localhost:5000/api/carriers/${email}/status`, {
+  fetch(getApiUrl(`/api/carriers/${email}/status`), {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ status })
@@ -182,7 +184,7 @@ export function addOrder(orderData) {
   saveMockDb(db);
 
   // Background API Sync
-  fetch('http://localhost:5000/api/orders', {
+  fetch(getApiUrl('/api/orders'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(orderData)
@@ -211,7 +213,7 @@ export function updateOrderStatus(orderId, status, details = {}) {
   saveMockDb(db);
 
   // Background API Sync
-  fetch(`http://localhost:5000/api/orders/${orderId}/status`, {
+  fetch(getApiUrl(`/api/orders/${orderId}/status`), {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ status, details })
@@ -238,7 +240,7 @@ export function updatePaymentStatus(orderId, paymentStatus) {
   saveMockDb(db);
 
   // Background API Sync
-  fetch(`http://localhost:5000/api/orders/${orderId}/payment`, {
+  fetch(getApiUrl(`/api/orders/${orderId}/payment`), {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ paymentStatus })
@@ -257,7 +259,7 @@ export function resetCarrierPassword(truckNumber, newPassword) {
   saveMockDb(db);
 
   // Background API Sync
-  fetch('http://localhost:5000/api/auth/reset-password', {
+  fetch(getApiUrl('/api/auth/reset-password'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ truckNumber, newPassword })

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Mail, Phone, Truck, Lock, ArrowRight, UploadCloud } from 'lucide-react';
+import { getApiUrl } from '../../config';
 import styles from './Login.module.css'; // Reusing form classes
 
 export default function CarrierRegister() {
@@ -116,7 +117,7 @@ export default function CarrierRegister() {
 
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/upload', {
+      const response = await fetch(getApiUrl('/api/upload'), {
         method: 'POST',
         body: formData
       });

@@ -5,6 +5,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { ProtectedRoute } from './components/shared/ProtectedRoute';
 import ScrollToTop from './components/shared/ScrollToTop';
 import FloatingThemeToggle from './components/shared/FloatingThemeToggle';
+import { getApiUrl } from './config';
 
 // Layouts
 import PublicLayout from './components/layout/PublicLayout';
@@ -59,7 +60,7 @@ function App() {
       localStorage.removeItem('dn_login_fails');
       
       // Sync DB reset to Node.js backend
-      fetch('http://localhost:5000/api/reset', { method: 'POST' }).catch(() => {});
+      fetch(getApiUrl('/api/reset'), { method: 'POST' }).catch(() => {});
       
       alert('Mock database wiped successfully! Ready for clean testing.');
       window.location.href = window.location.origin + window.location.pathname;
@@ -68,9 +69,9 @@ function App() {
       const syncDatabaseWithBackend = async () => {
         try {
           const [ordersRes, carriersRes, adminRes] = await Promise.all([
-            fetch('http://localhost:5000/api/orders'),
-            fetch('http://localhost:5000/api/carriers'),
-            fetch('http://localhost:5000/api/admin/credentials')
+            fetch(getApiUrl('/api/orders')),
+            fetch(getApiUrl('/api/carriers')),
+            fetch(getApiUrl('/api/admin/credentials'))
           ]);
           if (ordersRes.ok && carriersRes.ok) {
             const orders = await ordersRes.json();

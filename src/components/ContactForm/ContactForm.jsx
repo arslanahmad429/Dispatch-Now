@@ -4,6 +4,7 @@ import { Send, CheckCircle, Phone, Mail, MapPin, Truck, Lock, ArrowRight, Upload
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Drawer from '../shared/Drawer';
+import { getApiUrl } from '../../config';
 import styles from './ContactForm.module.css';
 
 const equipmentOptions = [
@@ -136,7 +137,7 @@ export default function ContactForm() {
 
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/upload', {
+      const response = await fetch(getApiUrl('/api/upload'), {
         method: 'POST',
         body: fd
       });
